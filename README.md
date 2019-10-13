@@ -51,4 +51,4 @@ If you want to run on another cluster, read [snakemake's documentation on cluste
 
 ## License
 
-The code in this repo is MIT licensed, see `./LICENSE.md`.
+The code in this repo is MIT licensed, see `./LICENSE.md`. This excludes the KlinicSlab font family (all files in `./report/fonts/`) which is copyright Lost Type.
