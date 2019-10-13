@@ -1,5 +1,7 @@
 PANDOC = "pandoc --filter pantable --filter pandoc-fignos --filter pandoc-tablenos --filter pandoc-citeproc"
 
+include: "./rules/sync.smk"
+
 
 rule all:
     message: "Run entire analysis and compile report."
