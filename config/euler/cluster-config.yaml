@@ -4,3 +4,7 @@ __default__:
     memory: 16000
     output: "build/logs/{rule}.{wildcards}.log"
     name: "{rule}.{wildcards}"
+run_continental:
+    runtime: 1439
+    cores: 6
+    memory: 10000

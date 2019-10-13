@@ -1,34 +1,17 @@
 PANDOC = "pandoc --filter pantable --filter pandoc-fignos --filter pandoc-tablenos --filter pandoc-citeproc"
 
+configfile: "./config/default.yaml"
 include: "./rules/sync.smk"
+include: "./rules/construct.smk"
+include: "./rules/analyse.smk"
 
 
 rule all:
     message: "Run entire analysis and compile report."
     input:
         "build/report.html",
-        "build/test-report.html"
-
-
-rule run:
-    message: "Runs the demo model."
-    input: "src/model.py"
-    params:
-        slope = 4,
-        x0 = 5
-    output: "build/results.pickle"
-    conda: "envs/default.yaml"
-    script: "src/model.py"
-
-
-rule plot:
-    message: "Visualises the demo results."
-    input:
-        src = "src/vis.py",
-        results = rules.run.output
-    output: "build/plot.png"
-    conda: "envs/default.yaml"
-    script: "src/vis.py"
+        f"build/output/{config['resolution']['space']}/aggregation.nc",
+        f"build/logs/{config['resolution']['space']}/test-report.html"
 
 
 def pandoc_options(wildcards):
@@ -55,8 +38,7 @@ rule report:
         "report/fonts/KlinicSlabBookIt.otf",
         "report/fonts/KlinicSlabMedium.otf",
         "report/fonts/KlinicSlabMediumIt.otf",
-        "report/report.css",
-        rules.plot.output
+        "report/report.css"
     params: options = pandoc_options
     output: "build/report.{suffix}"
     wildcard_constraints:
@@ -79,9 +61,3 @@ rule clean: # removes all generated results
         echo "Data downloaded to data/ has not been cleaned."
         """
 
-
-rule test:
-    conda: "envs/test.yaml"
-    output: "build/test-report.html"
-    shell:
-        "py.test --html={output} --self-contained-html"

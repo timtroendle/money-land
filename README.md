@@ -6,9 +6,17 @@ This repository contains the entire scientific project, including code and repor
 
 ## Getting ready
 
-You need [conda](https://conda.io/docs/index.html) to run the analysis. Using conda, you can create a conda environment from within you can run it:
+1. Clone the repo. Because `euro-calliope` is added as a git submodule, you may want to clone using `git clone --recurse-submodules <link-to-this-repo>`.
 
-    conda env create -f environment.yaml
+2. Create an environment to run the analysis. You need [conda](https://conda.io/docs/index.html) to run the analysis. Using conda, you can create a conda environment from within you can run it:
+
+    `conda env create -f environment.yaml`
+
+3. Make sure you have a Gurobi license, or install and configure another solver.
+
+4. You need an account at the Copernicus Climate Data Service and you need to create a `$HOME/.cdsapirc` file with your credentials, see their [How To](https://cds.climate.copernicus.eu/api-how-to) (you do not need to manually install the client).
+
+5. Provide the input data for Euro-Calliope, as defined in "Getting Ready" in  `./euro-calliope/README.md`.
 
 ## Run the analysis
 
@@ -37,6 +45,10 @@ If you want to run on another cluster, read [snakemake's documentation on cluste
 ## Run the tests
 
     snakemake test --use-conda
+
+## Units and scaling
+
+The default units for euro-calliope are `MW`, `MWh`, `EUR`, and `km2`, but you can scale all of these using the configuration values in `config/default.yaml`. Apart from convenience, this may be important to handle numerical issues with your solver.
 
 ## Repo structure
 
