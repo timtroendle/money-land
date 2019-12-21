@@ -1,0 +1,15 @@
+---
+title: Money Land
+author:
+    - Tim Tröndle
+institute: IASS Potsdam
+tags:
+    - 'reproducible-research'
+abstract: |
+    Trade-off between land use and cost of renewable electricity in Europe.
+bibliography:
+    - 'literature.bib'
+csl: 'energy-policy.csl'
+link-citations: True
+date: draft-01-dev
+---
