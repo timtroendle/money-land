@@ -4,6 +4,15 @@ configfile: "./config/default.yaml"
 include: "./rules/sync.smk"
 include: "./rules/construct.smk"
 include: "./rules/analyse.smk"
+localrules: all, clean, report
+onstart:
+    shell("mkdir -p build/logs")
+onsuccess:
+    if "email" in config.keys():
+        shell("echo "" | mail -s 'money-land succeeded' {config[email]}")
+onerror:
+    if "email" in config.keys():
+        shell("echo "" | mail -s 'money-land crashed' {config[email]}")
 
 
 rule all:

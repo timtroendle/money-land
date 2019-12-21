@@ -1,7 +1,7 @@
 # Rules to sync to and from Euler
 
 EULER_URL = "euler.ethz.ch"
-EULER_BASE_DIR = "~/Develop/sensitive-transitions/"
+EULER_BASE_DIR = "~/Develop/money-land/"
 EULER_BUILD_DIR = EULER_BASE_DIR + "build/"
 LOCAL_EULER_RESULTS = "./build-by-euler/"
 SYNCIGNORE = ".syncignore"
