@@ -3,10 +3,11 @@ import:
     - '../renewable-techs.yaml'
     - '../storage-techs.yaml'
     - '../link-techs.yaml'
+    - '../capacity-shares.yaml'
     - './locations.yaml'
     - './link-all-neighbours.yaml'
 model:
-    name: 'Sensitive Transitions'
+    name: 'Money Land'
     calliope_version: 0.6.5-dev
     timeseries_data_path: './'
     subset_time: ['2016-01-01', '2016-12-31']

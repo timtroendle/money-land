@@ -10,3 +10,4 @@ build
 build-by-euler
 data/automatic
 euro-calliope/data/capacityfactors/
+notebooks/

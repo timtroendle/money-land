@@ -1,6 +1,4 @@
 """Collect time aggregated results."""
-from pathlib import Path
-
 import calliope
 import pandas as pd
 import xarray as xr
@@ -20,7 +18,7 @@ VARIABLE_SCALING_FACTOR = {
 def excavate_all_results(paths_to_scenarios, path_to_units, scaling_factors, path_to_output):
     """Collect time aggregated results of all scenarios."""
     scenarios = {
-        Path(path_to_scenario).parent.name: calliope.read_netcdf(path_to_scenario)
+        calliope.read_netcdf(path_to_scenario).results.scenario: calliope.read_netcdf(path_to_scenario)
         for path_to_scenario in paths_to_scenarios
     }
     units = (

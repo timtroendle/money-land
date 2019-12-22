@@ -23,6 +23,14 @@ rule copy_resolution_specific_euro_calliope:
     shell: "cp {input} {output}"
 
 
+rule capacity_share:
+    message: "Create override file with capacity shares."
+    input: src = "src/construct/capacity_shares.py"
+    output: "build/model/capacity-shares.yaml"
+    conda: "../envs/default.yaml"
+    script: "../src/construct/capacity_shares.py"
+
+
 rule model:
     message: "Build entire model on resolution {wildcards.resolution}."
     input:
@@ -30,6 +38,7 @@ rule model:
         "build/model/renewable-techs.yaml",
         "build/model/storage-techs.yaml",
         "build/model/link-techs.yaml",
+        "build/model/capacity-shares.yaml",
         "build/model/{resolution}/locations.yaml",
         "build/model/{resolution}/link-all-neighbours.yaml",
         "build/model/{resolution}/electricity-demand.csv",
