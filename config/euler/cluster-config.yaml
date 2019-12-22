@@ -5,6 +5,5 @@ __default__:
     output: "build/logs/{rule}.{wildcards}.log"
     name: "{rule}.{wildcards}"
 run_continental:
-    runtime: 1439
-    cores: 6
-    memory: 10000
+    runtime: 5
+    memory: 1000

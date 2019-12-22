@@ -4,7 +4,7 @@ configfile: "./config/default.yaml"
 include: "./rules/sync.smk"
 include: "./rules/construct.smk"
 include: "./rules/analyse.smk"
-localrules: all, clean, report
+localrules: all, clean, copy_report_file, report
 onstart:
     shell("mkdir -p build/logs")
 onsuccess:

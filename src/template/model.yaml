@@ -3,7 +3,6 @@ import:
     - '../renewable-techs.yaml'
     - '../storage-techs.yaml'
     - '../link-techs.yaml'
-    - '../capacity-shares.yaml'
     - './locations.yaml'
     - './link-all-neighbours.yaml'
 model:

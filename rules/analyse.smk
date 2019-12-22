@@ -12,23 +12,19 @@ CAPACITY_SHARE_SAMPLES = list(range(0, 110, 10))
 rule run_continental:
     message: "Run the model on continental resolution with {wildcards.roof}/{wildcards.util}/{wildcards.wind}."
     input:
+        src = "src/analyse/run.py",
         model = "build/model/continental/model.yaml"
     params: override_dict = CALLIOPE_OVERRIDE_DICT
-    output: "build/output/continental/results-roof-{roof}-util-{util}-wind-{wind}.nc"
+    output: "build/output/continental/runs/roof-{roof}-util-{util}-wind-{wind}.nc"
     conda: "../envs/default.yaml"
-    shell:
-        """
-        calliope run {input.model} --save_netcdf {output} \
-            --override_dict="{params.override_dict}" \
-            --scenario="roof-{wildcards.roof}-percent,util-{wildcards.util}-percent,wind-{wildcards.wind}-percent"
-        """
+    script: "../src/analyse/run.py"
 
 
 rule time_aggregated_results:
     message: "Create NetCDF overview over all results."
     input:
         src = "src/analyse/aggregation.py",
-        scenarios = [f"build/output/continental/results-roof-{roof}-util-{util}-wind-{wind}.nc"
+        scenarios = [f"build/output/continental/runs/roof-{roof}-util-{util}-wind-{wind}.nc"
                      for roof in CAPACITY_SHARE_SAMPLES
                      for util in CAPACITY_SHARE_SAMPLES
                      for wind in CAPACITY_SHARE_SAMPLES
