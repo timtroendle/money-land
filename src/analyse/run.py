@@ -14,6 +14,7 @@ def run(path_to_model, override_dict, roof_share, util_share, wind_share, path_t
     set_log_verbosity("info", include_solver_output=True, capture_warnings=True)
     model = calliope.Model(
         path_to_model,
+        scenario="no-hydro-costs,stylised-storage",
         override_dict=override_dict
     )
     model.run(build_only=True)
