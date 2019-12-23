@@ -5,6 +5,7 @@ import:
     - '../link-techs.yaml'
     - './locations.yaml'
     - './link-all-neighbours.yaml'
+    - './import-restrictions.yaml'
 model:
     name: 'Money Land'
     calliope_version: 0.6.5-dev

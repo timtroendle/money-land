@@ -4,7 +4,7 @@ subworkflow eurocalliope:
     configfile: "./config/default.yaml"
 
 localrules: copy_euro_calliope, copy_resolution_specific_euro_calliope, model
-ruleorder: model > copy_euro_calliope > copy_resolution_specific_euro_calliope
+ruleorder: model > import_restrictions > copy_euro_calliope > copy_resolution_specific_euro_calliope
 wildcard_constraints:
     definition_file = "[^\/]*" # must not travers into directories
 
@@ -13,22 +13,27 @@ rule copy_euro_calliope:
     message: "Copy file {input[0]} from euro-calliope."
     input: eurocalliope("build/model/{definition_file}.{suffix}"),
     output: "build/model/{definition_file}.{suffix}"
-    shell: "cp {input} {output}"
+    shell: "ln {input} {output}"
 
 
 rule copy_resolution_specific_euro_calliope:
     message: "Copy file {input[0]} from euro-calliope."
     input: eurocalliope("build/model/{resolution}/{definition_file}.{suffix}"),
     output: "build/model/{resolution}/{definition_file}.{suffix}"
-    shell: "cp {input} {output}"
+    shell: "ln {input} {output}"
 
 
-rule capacity_share:
-    message: "Create override file with capacity shares."
-    input: src = "src/construct/capacity_shares.py"
-    output: "build/model/capacity-shares.yaml"
+rule import_restrictions:
+    message: "Create import restriction overrides for {wildcards.resolution} resolution."
+    input:
+        src = "src/construct/import.py",
+        units = eurocalliope("build/data/{resolution}/units.csv")
+    params:
+        restrictions = [0],
+        connected_regions = config["connected-regions"]
     conda: "../envs/default.yaml"
-    script: "../src/construct/capacity_shares.py"
+    output: "build/model/{resolution}/import-restrictions.yaml"
+    script: "../src/construct/import.py"
 
 
 rule model:
@@ -41,6 +46,7 @@ rule model:
         "build/model/{resolution}/locations.yaml",
         "build/model/{resolution}/link-all-neighbours.yaml",
         "build/model/{resolution}/electricity-demand.csv",
+        rules.import_restrictions.output,
         expand(
             "build/model/{{resolution}}/capacityfactors-{technology}.csv",
             technology=["open-field-pv", "rooftop-pv", "wind-offshore", "wind-onshore",

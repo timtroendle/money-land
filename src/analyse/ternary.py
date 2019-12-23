@@ -64,7 +64,7 @@ def read_data(path_to_data):
     land_use_data = ((
         data
         .energy_cap
-        .squeeze("locs")
+        .sum("locs")
         .sel(techs=["wind_onshore_monopoly", "wind_onshore_competing", "roof_mounted_pv", "open_field_pv"])
     ) * FACTORS).sum("techs").to_series()
     land_use_data.index = land_use_data.index.map(xyz).rename(["roof", "util", "wind"])

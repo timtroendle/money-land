@@ -14,7 +14,7 @@ onerror:
     if "email" in config.keys():
         shell("echo "" | mail -s 'money-land crashed' {config[email]}")
 wildcard_constraints:
-    resolution = "((continental))", # supported spatial resolutions
+    resolution = "((continental)|(national))", # supported spatial resolutions
     plot_suffix = "((png)|(svg))"
 
 

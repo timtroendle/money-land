@@ -7,3 +7,7 @@ __default__:
 run_continental:
     runtime: 5
     memory: 1000
+run_national:
+    runtime: 60
+    cores: 6
+    memory: 6000
