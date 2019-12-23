@@ -1,5 +1,10 @@
 import calliope
 from calliope.core.util.logging import set_log_verbosity
+import calliope.backend.run
+import calliope.backend.pyomo
+import calliope.core.attrdict
+import calliope.exceptions
+from calliope.analysis import postprocess
 import pyomo.core as po
 
 ROOFTOP_TECH_NAME = "roof_mounted_pv"
@@ -23,10 +28,11 @@ def run(path_to_model, override_dict, roof_share, util_share, wind_share, path_t
     pyomo_model.util_constraint = po.Constraint(rule=utility_constraint(util_share / 100))
     pyomo_model.wind_constraint = po.Constraint(rule=wind_constraint(wind_share / 100))
     pyomo_model.offshore_constraint = po.Constraint(rule=offshore_constraint)
-    results = model.backend.rerun().results
-    results.attrs["scenario"] = f"roof-{roof_share}-percent,util-{util_share}-percent,wind-{wind_share}-percent"
-    results.to_netcdf(path_to_output)
 
+    model = run_updated_model(model)
+    scenario = f"roof-{roof_share}-percent,util-{util_share}-percent,wind-{wind_share}-percent"
+    model._model_data.attrs["scenario"] = scenario
+    model.to_netcdf(path_to_output)
 
 # FIXME make constraints location specific?!
 
@@ -103,6 +109,38 @@ def is_pv_or_wind(loc_tech):
         or (WIND_TECH_NAME1 in loc_tech)
         or (WIND_TECH_NAME2 in loc_tech)
     )
+
+
+def run_updated_model(model):
+    # This method is largely taken from various places within Calliope's core code,
+    # as Calliope does not offer this functionality.
+    # The code is thus copyright Calliope authors.
+    backend_model = model.backend._backend
+    backend_model.__calliope_run_config = calliope.core.attrdict.AttrDict.from_yaml_string(
+        model._model_data.attrs['run_config']
+    )
+    results, backend_mode = calliope.backend.run.run_plan(
+        model_data=model._model_data,
+        timings=model._timings,
+        backend=calliope.backend.pyomo.model,
+        backend_rerun=backend_model,
+        build_only=False
+    )
+
+    # Add additional post-processed result variables to results
+    if results.attrs.get('termination_condition', None) in ['optimal', 'feasible']:
+        results = postprocess.postprocess_model_results(
+            results, model._model_data, model._timings
+        )
+    else:
+        raise calliope.exceptions.BackendError("Problem is non optimal.")
+
+    for var in results.data_vars:
+        results[var].attrs['is_result'] = 1
+    model._model_data.update(results)
+    model._model_data.attrs.update(results.attrs)
+    model.results = model._model_data.filter_by_attrs(is_result=1)
+    return model
 
 
 if __name__ == "__main__":

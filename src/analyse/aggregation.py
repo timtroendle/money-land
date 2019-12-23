@@ -10,6 +10,7 @@ VARIABLE_SCALING_FACTOR = {
     "carrier_con": lambda sf: 1 / sf["power"],
     "total_levelised_cost": lambda sf: sf["power"] / sf["monetary"],
     "capacity_factor": lambda sf: 1,
+    "resource": lambda sf: 1,
     "cost": lambda sf: 1 / sf["monetary"]
 }
 
@@ -34,6 +35,8 @@ def excavate_all_results(paths_to_scenarios, path_to_units, scaling_factors, pat
         for variable_name in VARIABLE_SCALING_FACTOR.keys()
     })
     ds.coords["country_code"] = units.country_code
+    ds.coords["tech_group"] = list(scenarios.values())[0].get_formatted_array("inheritance")
+    ds.coords["tech_group"].loc[:] = [parent.split('.')[-1] for parent in ds["tech_group"].values]
     ds.to_netcdf(path_to_output)
 
 
