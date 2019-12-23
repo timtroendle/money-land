@@ -58,7 +58,8 @@ rule report:
         "report/fonts/KlinicSlabMedium.otf",
         "report/fonts/KlinicSlabMediumIt.otf",
         "report/report.css",
-        "build/output/{resolution}/report/ternary.svg"
+        "build/output/{resolution}/report/ternary.svg",
+        "build/output/{resolution}/report/scatter.svg"
     params: options = pandoc_options
     output: "build/output/{resolution}/report.{suffix}"
     wildcard_constraints:

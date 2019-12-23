@@ -59,16 +59,16 @@ def plot_both_ternary(path_to_data, path_to_plot):
 def read_data(path_to_data):
     data = xr.open_dataset(path_to_data)
     cost_data = data.cost.sum(["locs", "techs"]).to_series()
-    cost_data.index = cost_data.index.map(xyz).rename(["roof", "util", "wind"])
-    cost_data = (cost_data / cost_data.mean())
+    cost_data.index = cost_data.index.map(xyz).rename(["util", "wind", "roof"])
+    cost_data = (cost_data / cost_data.min())
     land_use_data = ((
         data
         .energy_cap
         .sum("locs")
         .sel(techs=["wind_onshore_monopoly", "wind_onshore_competing", "roof_mounted_pv", "open_field_pv"])
     ) * FACTORS).sum("techs").to_series()
-    land_use_data.index = land_use_data.index.map(xyz).rename(["roof", "util", "wind"])
-    land_use_data = (land_use_data / land_use_data.mean())
+    land_use_data.index = land_use_data.index.map(xyz).rename(["util", "wind", "roof"])
+    land_use_data = (land_use_data / land_use_data[cost_data[cost_data == cost_data.min()].index].values[0])
     return cost_data, land_use_data
 
 

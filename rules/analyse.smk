@@ -61,6 +61,16 @@ rule ternary_plots:
     script: "../src/analyse/ternary.py"
 
 
+rule scatter_plot:
+    message: "Create scatter plots of results."
+    input:
+        src = "src/analyse/scatter.py",
+        results = rules.time_aggregated_results.output[0]
+    conda: "../envs/default.yaml"
+    output: "build/output/{resolution}/scatter.{plot_suffix}"
+    script: "../src/analyse/scatter.py"
+
+
 rule test:
     message: "Run tests"
     input:
