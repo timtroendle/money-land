@@ -14,8 +14,9 @@ WIND_TECH_NAME2 = "wind_onshore_competing"
 OFFSHORE_TECH_NAME = "wind_offshore"
 
 
-def run(path_to_model, override_dict, roof_share, util_share, wind_share, resolution, path_to_output):
-    assert roof_share + util_share + wind_share == 100
+def run(path_to_model, override_dict, roof_share, util_share, wind_share, offshore_share,
+        units_without_shore, resolution, path_to_output):
+    assert roof_share + util_share + wind_share + offshore_share == 100
     set_log_verbosity("info", include_solver_output=True, capture_warnings=True)
     if resolution == "national":
         scenario = f"no-hydro-costs,stylised-storage,{resolution}-autarky-100-percent"
@@ -30,11 +31,16 @@ def run(path_to_model, override_dict, roof_share, util_share, wind_share, resolu
     pyomo_model = model.backend._backend
     pyomo_model.roof_constraint = po.Constraint(pyomo_model.locs, rule=rooftop_constraint(roof_share / 100))
     pyomo_model.util_constraint = po.Constraint(pyomo_model.locs, rule=utility_constraint(util_share / 100))
-    pyomo_model.wind_constraint = po.Constraint(pyomo_model.locs, rule=wind_constraint(wind_share / 100))
-    pyomo_model.offshore_constraint = po.Constraint(rule=offshore_constraint)
-
+    pyomo_model.wind_constraint = po.Constraint(
+        pyomo_model.locs,
+        rule=wind_constraint(wind_share / 100, offshore_share / 100, units_without_shore)
+    )
+    pyomo_model.offshore_constraint = po.Constraint(
+        pyomo_model.locs,
+        rule=offshore_constraint(offshore_share / 100, units_without_shore)
+    )
     model = run_updated_model(model)
-    scenario = f"roof-{roof_share}-percent,util-{util_share}-percent,wind-{wind_share}-percent"
+    scenario = f"roof-{roof_share}-percent,util-{util_share}-percent,wind-{wind_share}-percent,offshore-{offshore_share}-percent"
     model._model_data.attrs["scenario"] = scenario
     model.to_netcdf(path_to_output)
 
@@ -72,8 +78,12 @@ def utility_constraint(share):
     return utility_constraint
 
 
-def wind_constraint(share):
+def wind_constraint(wind_share, offshore_share, units_without_shore):
     def wind_constraint(model, loc):
+        if offshore_share > 0 and loc in units_without_shore:
+            share = wind_share + offshore_share
+        else:
+            share = wind_share
         lhs = sum(
             model.energy_cap[loc_tech]
             for loc_tech in model.loc_techs
@@ -88,13 +98,24 @@ def wind_constraint(share):
     return wind_constraint
 
 
-def offshore_constraint(model):
-    lhs = sum(
-        model.energy_cap[loc_tech]
-        for loc_tech in model.loc_techs
-        if OFFSHORE_TECH_NAME in str(loc_tech)
-    )
-    return lhs == 0
+def offshore_constraint(offshore_share, units_without_shore):
+    def offshore_constraint(model, loc):
+        if offshore_share > 0 and loc in units_without_shore:
+            share = 0
+        else:
+            share = offshore_share
+        lhs = sum(
+            model.energy_cap[loc_tech]
+            for loc_tech in model.loc_techs
+            if loc_tech.split("::") == [loc, OFFSHORE_TECH_NAME]
+        )
+        rhs = share * sum(
+            model.energy_cap[loc_tech]
+            for loc_tech in model.loc_techs
+            if is_pv_or_wind(loc_tech) and (loc_tech.split("::")[0] == loc)
+        )
+        return lhs == rhs
+    return offshore_constraint
 
 
 def is_wind(loc_tech):
@@ -112,6 +133,7 @@ def is_pv_or_wind(loc_tech):
         or (UTILITY_TECH_NAME in loc_tech)
         or (WIND_TECH_NAME1 in loc_tech)
         or (WIND_TECH_NAME2 in loc_tech)
+        or (OFFSHORE_TECH_NAME in loc_tech)
     )
 
 
@@ -154,6 +176,8 @@ if __name__ == "__main__":
         roof_share=int(snakemake.wildcards.roof),
         util_share=int(snakemake.wildcards.util),
         wind_share=int(snakemake.wildcards.wind),
+        offshore_share=int(snakemake.wildcards.offshore),
+        units_without_shore=snakemake.params.no_shore,
         resolution=snakemake.params.resolution,
         path_to_output=snakemake.output[0]
     )

@@ -112,6 +112,19 @@ scope:
         x_max: 37  # in degrees east
         y_min: 30  # in degrees north
         y_max: 75  # in degrees north
+units-without-shore:
+    continental: []
+    national:
+        - AUT
+        - BIH # has a shore, but offshore potential very small
+        - CHE
+        - CZE
+        - HUN
+        - LUX
+        - MKD
+        - SRB
+        - SVK
+        - SVN # has a shore, but offshore potential very small
 shapes: # This config must be consistent with data from https://doi.org/10.5281/zenodo.3244985.
     continental:
         Austria: nuts0

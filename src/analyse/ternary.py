@@ -1,3 +1,5 @@
+from dataclasses import dataclass
+
 import ternary
 import numpy as np
 import pandas as pd
@@ -13,13 +15,24 @@ PANEL_FONT_WEIGHT = "bold"
 FACTORS = pd.Series({ # FIXME inject
     "wind_onshore_monopoly": 1 / 8,
     "wind_onshore_competing": 1 / 8,
+    "wind_offshore": 0,
     "roof_mounted_pv": 0,
     "open_field_pv": 1 / 80
 }).to_xarray().rename(index="techs")
 
 
-def plot_both_ternary(path_to_data, path_to_plot):
-    cost_data, land_use_data = read_data(path_to_data)
+@dataclass
+class PlotData:
+    data: pd.Series
+    right_corner_label: str
+    top_corner_label: str
+    left_corner_label: str
+    norm: matplotlib.colors.Normalize
+
+
+def plot_both_ternary(path_to_data, case, path_to_plot):
+    assert case in ["roof", "offshore"]
+    plot_data_cost, plot_data_land_use = read_data(path_to_data, case)
 
     sns.set_context("paper")
     fig = plt.figure(figsize=(8, 3.5))
@@ -29,19 +42,13 @@ def plot_both_ternary(path_to_data, path_to_plot):
     cbar_ax_1 = fig.add_subplot(gs[1])
     cbar_ax_2 = fig.add_subplot(gs[4])
 
-    vmin = cost_data.min()
-    vmax = cost_data.max()
-    norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
-    plot_ternary(cost_data.to_dict(), vmin=vmin, vmax=vmax, ax=ax_1)
-    plot_colorbar(fig, cbar_ax_1, norm, "viridis")
+    plot_ternary(plot_data_cost, ax=ax_1)
+    plot_colorbar(fig, cbar_ax_1, plot_data_cost.norm, "viridis")
     ax_1.annotate('a', xy=[-0.08, 1.05], xycoords='axes fraction',
                   fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
 
-    vmin = land_use_data.min()
-    vmax = land_use_data.max()
-    norm = matplotlib.colors.Normalize(vmin=vmin, vmax=vmax)
-    plot_ternary(land_use_data.to_dict(), vmin=vmin, vmax=vmax, ax=ax_2)
-    plot_colorbar(fig, cbar_ax_2, norm, "viridis")
+    plot_ternary(plot_data_land_use, ax=ax_2)
+    plot_colorbar(fig, cbar_ax_2, plot_data_land_use.norm, "viridis")
     ax_2.annotate('b', xy=[-0.08, 1.05], xycoords='axes fraction',
                   fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
 
@@ -56,28 +63,69 @@ def plot_both_ternary(path_to_data, path_to_plot):
     fig.savefig(path_to_plot, dpi=600)
 
 
-def read_data(path_to_data):
+def read_data(path_to_data, case):
     data = xr.open_dataset(path_to_data)
     cost_data = data.cost.sum(["locs", "techs"]).to_series()
-    cost_data.index = cost_data.index.map(xyz).rename(["util", "wind", "roof"])
     cost_data = (cost_data / cost_data.min())
     land_use_data = ((
         data
         .energy_cap
         .sum("locs")
-        .sel(techs=["wind_onshore_monopoly", "wind_onshore_competing", "roof_mounted_pv", "open_field_pv"])
+        .sel(techs=["wind_onshore_monopoly", "wind_onshore_competing", "wind_offshore",
+                    "roof_mounted_pv", "open_field_pv"])
     ) * FACTORS).sum("techs").to_series()
-    land_use_data.index = land_use_data.index.map(xyz).rename(["util", "wind", "roof"])
     land_use_data = (land_use_data / land_use_data[cost_data[cost_data == cost_data.min()].index].values[0])
-    return cost_data, land_use_data
+
+    cost_data.index = scenario_name_to_multiindex(cost_data.index)
+    cost_data = filter_three_dimensions(cost_data, case)
+    land_use_data.index = scenario_name_to_multiindex(land_use_data.index)
+    land_use_data = filter_three_dimensions(land_use_data, case)
+    if case == "roof":
+        left_corner_label = "Rooftop PV"
+    else:
+        left_corner_label = "Offshore wind"
+
+    plot_data_cost = PlotData(
+        data=cost_data,
+        right_corner_label="Utility-scale PV",
+        top_corner_label="Onshore wind",
+        left_corner_label=left_corner_label,
+        norm=matplotlib.colors.Normalize(vmin=cost_data.min(), vmax=cost_data.max())
+    )
+    plot_data_land_use = PlotData(
+        data=land_use_data,
+        right_corner_label="Utility-scale PV",
+        top_corner_label="Onshore wind",
+        left_corner_label=left_corner_label,
+        norm=matplotlib.colors.Normalize(vmin=land_use_data.min(), vmax=land_use_data.max())
+    )
+    return plot_data_cost, plot_data_land_use
 
 
-def xyz(scenario_name):
-    roof, util, wind = tuple(int(x.split("-")[1]) // 10 for x in scenario_name.split(","))
-    return (util, wind, roof)
+def scenario_name_to_multiindex(index):
+    return index.map(wxyz).rename(["util", "wind", "roof", "offshore"])
 
 
-def plot_ternary(data, vmin, vmax, ax):
+def wxyz(scenario_name):
+    roof, util, wind, offshore = tuple(int(x.split("-")[1]) // 10 for x in scenario_name.split(","))
+    return (util, wind, roof, offshore)
+
+
+def filter_three_dimensions(data, case):
+    if case == "roof":
+        column = "offshore"
+    else:
+        column = "roof"
+    return (
+        data
+        .reset_index()[data.reset_index()[column] == 0]
+        .drop(columns=[column])
+        .set_index(["util", "wind", case])
+        .iloc[:, 0]
+    )
+
+
+def plot_ternary(plot_data, ax):
     scale = 10
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
@@ -85,10 +133,17 @@ def plot_ternary(data, vmin, vmax, ax):
     ax.spines['left'].set_visible(False)
     figure, tax = ternary.figure(ax=ax, scale=scale)
     tax.boundary(linewidth=1.0)
-    tax.heatmap(data, scale=10, style="triangular", colorbar=False, vmin=vmin, vmax=vmax)
-    tax.right_corner_label("Utility-scale PV", ha="center", rotation=25)
-    tax.top_corner_label("Onshore wind", offset=0.2)
-    tax.left_corner_label("Rooftop PV", ha="center", rotation=-25)
+    tax.heatmap(
+        plot_data.data.to_dict(),
+        scale=10,
+        style="triangular",
+        colorbar=False,
+        vmin=plot_data.norm.vmin,
+        vmax=plot_data.norm.vmax
+    )
+    tax.right_corner_label(plot_data.right_corner_label, ha="center", rotation=25)
+    tax.top_corner_label(plot_data.top_corner_label, offset=0.2)
+    tax.left_corner_label(plot_data.left_corner_label, ha="center", rotation=-25)
     tax.ticks(ticks=range(0, 110, 20), axis='lbr', linewidth=1, multiple=1, offset=0.02)
     tax.clear_matplotlib_ticks()
     tax._redraw_labels()
@@ -117,5 +172,6 @@ def plot_colorbar(fig, ax, norm, cmap):
 if __name__ == "__main__":
     plot_both_ternary(
         path_to_data=snakemake.input.results,
+        case=snakemake.wildcards.case,
         path_to_plot=snakemake.output[0]
     )

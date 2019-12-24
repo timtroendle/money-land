@@ -1,3 +1,6 @@
+from dataclasses import dataclass
+
+import numpy as np
 import pandas as pd
 import xarray as xr
 import matplotlib
@@ -10,6 +13,7 @@ PANEL_FONT_WEIGHT = "bold"
 FACTORS = pd.Series({ # FIXME inject
     "wind_onshore_monopoly": 1 / 8,
     "wind_onshore_competing": 1 / 8,
+    "wind_offshore": 0,
     "roof_mounted_pv": 0,
     "open_field_pv": 1 / 80
 }).to_xarray().rename(index="techs")
@@ -22,9 +26,16 @@ ANTHRACITE = "#424242"
 PALETTE = sns.light_palette(BLUE, n_colors=11)
 
 
-def scatter(path_to_results, path_to_plot):
-    cost_data, land_use_data = read_data(path_to_results)
-    both_data = pd.DataFrame({"land_use": land_use_data, "cost": cost_data}).reset_index()
+@dataclass
+class PlotData:
+    data: pd.DataFrame
+    pareto_points: pd.DataFrame
+    case: str
+    case_title: str
+
+
+def scatter(path_to_results, case, path_to_plot):
+    plot_data = read_data(path_to_results, case=case)
 
     sns.set_context("paper")
     fig = plt.figure(figsize=(8, 4))
@@ -36,26 +47,22 @@ def scatter(path_to_results, path_to_plot):
     ax_aux = fig.add_subplot(gs[:, 1])
     ax_aux.axis('off')
 
-    pareto_points = both_data.set_index(["util", "wind", "roof"]).loc[
-        [(0, 100, 0), (10, 90, 0), (20, 80, 0), (30, 70, 0), (40, 60, 0), (50, 50, 0), (60, 40, 0),
-         (70, 30, 0), (80, 20, 0), (90, 10, 0), (100, 0, 0), (0, 0, 100)], :]
-    cost_optimal_points = both_data.set_index(["util", "wind", "roof"]).loc[(30, 70, 0), :]
     ax_main.plot(
-        pareto_points.land_use,
-        pareto_points.cost,
+        plot_data.pareto_points.land_use,
+        plot_data.pareto_points.cost,
         label="Pareto frontier",
         color=RED
     )
     ax_main.plot(
-        cost_optimal_points.land_use,
-        cost_optimal_points.cost,
+        [1.0],
+        [1.0],
         label="Cost minimum",
         marker="o",
         linestyle="",
         color=RED
     )
     sns.scatterplot(
-        data=both_data,
+        data=plot_data.data,
         y="cost",
         x="land_use",
         legend=False,
@@ -72,15 +79,15 @@ def scatter(path_to_results, path_to_plot):
                      fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
 
     sns.scatterplot(
-        data=both_data,
+        data=plot_data.data,
         y="cost",
         x="land_use",
-        hue="roof",
+        hue=plot_data.case,
         legend=False,
         ax=ax_roof,
         palette=PALETTE
     )
-    ax_roof.set_title("Rooftop PV share")
+    ax_roof.set_title(plot_data.case_title)
     for tick in ax_roof.xaxis.get_major_ticks():
         tick.set_visible(False)
     for tick in ax_roof.yaxis.get_major_ticks():
@@ -91,7 +98,7 @@ def scatter(path_to_results, path_to_plot):
                     fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
 
     sns.scatterplot(
-        data=both_data,
+        data=plot_data.data,
         y="cost",
         x="land_use",
         hue="util",
@@ -108,7 +115,7 @@ def scatter(path_to_results, path_to_plot):
     ax_util.set_ylabel("")
 
     sns.scatterplot(
-        data=both_data,
+        data=plot_data.data,
         y="cost",
         x="land_use",
         hue="wind",
@@ -127,29 +134,78 @@ def scatter(path_to_results, path_to_plot):
     fig.savefig(path_to_plot, dpi=600)
 
 
-def read_data(path_to_data):
+def read_data(path_to_data, case):
     data = xr.open_dataset(path_to_data)
     cost_data = data.cost.sum(["locs", "techs"]).to_series()
-    cost_data.index = cost_data.index.map(xyz).rename(["util", "wind", "roof"])
     cost_data = (cost_data / cost_data.min())
     land_use_data = ((
         data
         .energy_cap
         .sum("locs")
-        .sel(techs=["wind_onshore_monopoly", "wind_onshore_competing", "roof_mounted_pv", "open_field_pv"])
+        .sel(techs=["wind_onshore_monopoly", "wind_onshore_competing", "wind_offshore",
+                    "roof_mounted_pv", "open_field_pv"])
     ) * FACTORS).sum("techs").to_series()
-    land_use_data.index = land_use_data.index.map(xyz).rename(["util", "wind", "roof"])
     land_use_data = (land_use_data / land_use_data[cost_data[cost_data == cost_data.min()].index].values[0])
-    return cost_data, land_use_data
+
+    cost_data.index = scenario_name_to_multiindex(cost_data.index)
+    cost_data = filter_three_dimensions(cost_data, case)
+    land_use_data.index = scenario_name_to_multiindex(land_use_data.index)
+    land_use_data = filter_three_dimensions(land_use_data, case)
+
+    both_data = pd.DataFrame({"land_use": land_use_data, "cost": cost_data})
+
+    if case == "roof":
+        case_title = "Rooftop PV"
+    else:
+        case_title = "Offshore wind"
+
+    return PlotData(
+        data=both_data.reset_index(),
+        pareto_points=both_data.loc[is_pareto_efficient(both_data.values), :].sort_values("cost"),
+        case=case,
+        case_title=case_title
+    )
 
 
-def xyz(scenario_name):
-    roof, util, wind = tuple(int(x.split("-")[1]) for x in scenario_name.split(","))
-    return (util, wind, roof)
+def scenario_name_to_multiindex(index):
+    return index.map(wxyz).rename(["util", "wind", "roof", "offshore"])
+
+
+def wxyz(scenario_name):
+    roof, util, wind, offshore = tuple(int(x.split("-")[1]) // 10 for x in scenario_name.split(","))
+    return (util, wind, roof, offshore)
+
+
+def filter_three_dimensions(data, case):
+    if case == "roof":
+        column = "offshore"
+    else:
+        column = "roof"
+    return (
+        data
+        .reset_index()[data.reset_index()[column] == 0]
+        .drop(columns=[column])
+        .set_index(["util", "wind", case])
+        .iloc[:, 0]
+    )
+
+
+def is_pareto_efficient(costs):
+    """
+    Find the pareto-efficient points
+    :param costs: An (n_points, n_costs) array
+    :return: A (n_points, ) boolean array, indicating whether each point is Pareto efficient
+    """
+    # taken from https://stackoverflow.com/a/40239615/1856079
+    is_efficient = np.ones(costs.shape[0], dtype=bool)
+    for i, c in enumerate(costs):
+        is_efficient[i] = np.all(np.any(costs[:i] > c, axis=1)) and np.all(np.any(costs[i + 1:] > c, axis=1))
+    return is_efficient
 
 
 if __name__ == "__main__":
     scatter(
         path_to_results=snakemake.input.results,
+        case=snakemake.wildcards.case,
         path_to_plot=snakemake.output[0]
     )

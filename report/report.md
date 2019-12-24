@@ -4,13 +4,17 @@
 
 # Results
 
-![**Cost and land use of fully renewable electricity systems with different shares of rooftop PV, utility-scale PV, and onshore wind. a,** Total system cost relative to minimal total system cost. **b,** Land use relative to land use of the minimal-cost case.](report/ternary.svg){#fig:ternary .class}
+![**Cost and land use of fully renewable electricity systems with different shares of rooftop PV, utility-scale PV, and onshore wind.** All systems contain no offshore wind capacity. **a,** Total system cost relative to minimal total system cost. **b,** Land use relative to land use of the minimal-cost case.](report/ternary-roof.svg){#fig:ternary-roof .class}
 
-![**Cost and land use of fully renewable electricity systems with different shares of rooftop PV, utility-scale PV, and onshore wind.** Cost is relative to minimal cost. Land use is relative to land use of the minimal-cost case. **a,** Cost and land use of all cases. The red line indicates the Pareto frontier on which neither cost nor land use can be reduced without increasing the respective other. **b,** Cost and land use of all cases. Darker colours indicate the share of rooftop PV (top), utility-scale PV (middle), and onshore wind (bottom).](report/scatter.svg){#fig:scatter .class}
+![**Cost and land use of fully renewable electricity systems with different shares of rooftop PV, utility-scale PV, and onshore wind.** All systems contain no offshore wind capacity. Cost is relative to minimal cost. Land use is relative to land use of the minimal-cost case. **a,** Cost and land use of all cases. The red line indicates the Pareto frontier on which neither cost nor land use can be reduced without increasing the respective other. **b,** Cost and land use of all cases. Darker colours indicate the share of rooftop PV (top), utility-scale PV (middle), and onshore wind (bottom).](report/scatter-roof.svg){#fig:scatter-roof .class}
 
 ## Impact of footprint only
 
 ## Impact of offshore
+
+![**Cost and land use of fully renewable electricity systems with different shares of offshore wind, utility-scale PV, and onshore wind.** All systems contain no rooftop PV capacity. **a,** Total system cost relative to minimal total system cost. **b,** Land use relative to land use of the minimal-cost case.](report/ternary-offshore.svg){#fig:ternary-offshore .class}
+
+![**Cost and land use of fully renewable electricity systems with different shares of offshore wind, utility-scale PV, and onshore wind.** All systems contain no rooftop PV capacity. Cost is relative to minimal cost. Land use is relative to land use of the minimal-cost case. **a,** Cost and land use of all cases. The red line indicates the Pareto frontier on which neither cost nor land use can be reduced without increasing the respective other. **b,** Cost and land use of all cases. Darker colours indicate the share of offshore wind (top), utility-scale PV (middle), and onshore wind (bottom).](report/scatter-offshore.svg){#fig:scatter-offshore .class}
 
 ## Geographic distribution
 
