@@ -24,7 +24,8 @@ ALL_SCENARIOS = (
     ]
 )
 wildcard_constraints:
-    case = "((roof)|(offshore))"
+    case = "((roof)|(offshore))",
+    land = "((land-use)|(footprint-only))"
 
 
 rule run_continental:
@@ -72,8 +73,9 @@ rule ternary_plots:
     input:
         src = "src/analyse/ternary.py",
         results = rules.aggregated_results.output[0]
+    params: land_factors = lambda wildcards: config["parameters"][wildcards["land"]]
     conda: "../envs/default.yaml"
-    output: "build/output/{resolution}/ternary-{case}.{plot_suffix}"
+    output: "build/output/{resolution}/{land}/ternary-{case}.{plot_suffix}"
     script: "../src/analyse/ternary.py"
 
 
@@ -82,8 +84,9 @@ rule scatter_plot:
     input:
         src = "src/analyse/scatter.py",
         results = rules.aggregated_results.output[0]
+    params: land_factors = lambda wildcards: config["parameters"][wildcards["land"]]
     conda: "../envs/default.yaml"
-    output: "build/output/{resolution}/scatter-{case}.{plot_suffix}"
+    output: "build/output/{resolution}/{land}/scatter-{case}.{plot_suffix}"
     script: "../src/analyse/scatter.py"
 
 

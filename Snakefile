@@ -58,10 +58,14 @@ rule report:
         "report/fonts/KlinicSlabMedium.otf",
         "report/fonts/KlinicSlabMediumIt.otf",
         "report/report.css",
-        "build/output/{resolution}/report/ternary-roof.svg",
-        "build/output/{resolution}/report/scatter-roof.svg",
-        "build/output/{resolution}/report/ternary-offshore.svg",
-        "build/output/{resolution}/report/scatter-offshore.svg"
+        "build/output/{resolution}/report/land-use/ternary-roof.svg",
+        "build/output/{resolution}/report/land-use/scatter-roof.svg",
+        "build/output/{resolution}/report/land-use/ternary-offshore.svg",
+        "build/output/{resolution}/report/land-use/scatter-offshore.svg",
+        "build/output/{resolution}/report/footprint-only/ternary-roof.svg",
+        "build/output/{resolution}/report/footprint-only/scatter-roof.svg",
+        "build/output/{resolution}/report/footprint-only/ternary-offshore.svg",
+        "build/output/{resolution}/report/footprint-only/scatter-offshore.svg"
     params: options = pandoc_options
     output: "build/output/{resolution}/report.{suffix}"
     wildcard_constraints:

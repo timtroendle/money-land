@@ -10,13 +10,6 @@ import seaborn as sns
 
 PANEL_FONT_SIZE = 10
 PANEL_FONT_WEIGHT = "bold"
-FACTORS = pd.Series({ # FIXME inject
-    "wind_onshore_monopoly": 1 / 8,
-    "wind_onshore_competing": 1 / 8,
-    "wind_offshore": 0,
-    "roof_mounted_pv": 0,
-    "open_field_pv": 1 / 80
-}).to_xarray().rename(index="techs")
 
 GREEN = "#679436"
 RED = "#A01914"
@@ -34,8 +27,8 @@ class PlotData:
     case_title: str
 
 
-def scatter(path_to_results, case, path_to_plot):
-    plot_data = read_data(path_to_results, case=case)
+def scatter(path_to_results, case, land_use_factors, path_to_plot):
+    plot_data = read_data(path_to_results, case=case, land_use_factors=land_use_factors)
 
     sns.set_context("paper")
     fig = plt.figure(figsize=(8, 4))
@@ -134,7 +127,7 @@ def scatter(path_to_results, case, path_to_plot):
     fig.savefig(path_to_plot, dpi=600)
 
 
-def read_data(path_to_data, case):
+def read_data(path_to_data, case, land_use_factors):
     data = xr.open_dataset(path_to_data)
     cost_data = data.cost.sum(["locs", "techs"]).to_series()
     cost_data = (cost_data / cost_data.min())
@@ -144,7 +137,7 @@ def read_data(path_to_data, case):
         .sum("locs")
         .sel(techs=["wind_onshore_monopoly", "wind_onshore_competing", "wind_offshore",
                     "roof_mounted_pv", "open_field_pv"])
-    ) * FACTORS).sum("techs").to_series()
+    ) * land_use_factors).sum("techs").to_series()
     land_use_data = (land_use_data / land_use_data[cost_data[cost_data == cost_data.min()].index].values[0])
 
     cost_data.index = scenario_name_to_multiindex(cost_data.index)
@@ -207,5 +200,6 @@ if __name__ == "__main__":
     scatter(
         path_to_results=snakemake.input.results,
         case=snakemake.wildcards.case,
+        land_use_factors=pd.Series(snakemake.params.land_factors).to_xarray().rename(index="techs"),
         path_to_plot=snakemake.output[0]
     )
