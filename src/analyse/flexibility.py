@@ -20,10 +20,10 @@ PALETTE = sns.light_palette(RED, as_cmap=True)
 @dataclass
 class PlotData:
     data: pd.Series
-    left_corner_label: str
     name: str
-    right_corner_label: str = "Utility-scale PV →"
-    top_corner_label: str = "← Onshore wind"
+    left_axis_label: str
+    bottom_axis_label: str = "Utility-scale PV →"
+    right_axis_label: str = "← Onshore wind"
 
 
 def flexibility(path_to_results, path_to_plot):
@@ -79,9 +79,9 @@ def plot_ternary(plot_data, ax, norm):
         vmin=norm.vmin,
         vmax=norm.vmax
     )
-    tax.bottom_axis_label(plot_data.right_corner_label, ha="center", offset=0.05)
-    tax.right_axis_label(plot_data.top_corner_label, offset=0.10)
-    tax.left_axis_label(plot_data.left_corner_label, ha="center", offset=0.10)
+    tax.bottom_axis_label(plot_data.bottom_axis_label, ha="center", offset=0.05)
+    tax.right_axis_label(plot_data.right_axis_label, offset=0.10)
+    tax.left_axis_label(plot_data.left_axis_label, ha="center", offset=0.10)
     tax.clear_matplotlib_ticks()
     tax._redraw_labels()
 
@@ -126,15 +126,15 @@ def read_data(path_to_data, case):
     e_stor = filter_three_dimensions(e_stor, case)
     trans = filter_three_dimensions(trans, case)
     if case == "roof":
-        left_corner_label = "← Rooftop PV"
+        left_axis_label = "← Rooftop PV"
     else:
-        left_corner_label = "← Offshore wind"
+        left_axis_label = "← Offshore wind"
 
     return [
         PlotData(
             data=da,
             name=name,
-            left_corner_label=left_corner_label,
+            left_axis_label=left_axis_label,
         )
         for da, name in ((stor, "Storage (GW)"),
                          (e_stor, "Storage (TWh)"),
