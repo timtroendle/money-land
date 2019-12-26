@@ -65,7 +65,8 @@ rule report:
         "build/output/{resolution}/report/footprint-only/ternary-roof.svg",
         "build/output/{resolution}/report/footprint-only/scatter-roof.svg",
         "build/output/{resolution}/report/footprint-only/ternary-offshore.svg",
-        "build/output/{resolution}/report/footprint-only/scatter-offshore.svg"
+        "build/output/{resolution}/report/footprint-only/scatter-offshore.svg",
+        "build/output/{resolution}/report/flexibility.svg"
     params: options = pandoc_options
     output: "build/output/{resolution}/report.{suffix}"
     wildcard_constraints:

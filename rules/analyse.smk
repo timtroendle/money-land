@@ -90,6 +90,16 @@ rule scatter_plot:
     script: "../src/analyse/scatter.py"
 
 
+rule flexibility_plot:
+    message: "Create plot of flexibility needs."
+    input:
+        src = "src/analyse/flexibility.py",
+        results = rules.aggregated_results.output[0]
+    conda: "../envs/default.yaml"
+    output: "build/output/{resolution}/flexibility.{plot_suffix}"
+    script: "../src/analyse/flexibility.py"
+
+
 rule test:
     message: "Run tests"
     input:
