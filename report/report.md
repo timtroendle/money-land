@@ -4,6 +4,8 @@
 
 # Results
 
+![**Land use of solar and wind power in a cost-minimal, fully renewable electricity system with 30% utility-scale photovoltaics and 70% onshore wind capacity.** Countries considered in this study are shown in grey. The blue area shows the amount of land required for solar and wind installations if generation was concentrated in single place. In addition to solar and wind, electricity is generated from hydropower capacity of today's magnitude and bioenergy capacity generating electricity from biomass residuals.](report/map.png){#fig:map .class}
+
 ![**Cost and land use of fully renewable electricity systems with different shares of rooftop PV, utility-scale PV, and onshore wind.** All systems contain no offshore wind capacity. **a,** Total system cost relative to minimal total system cost. **b,** Land use relative to land use of the minimal-cost case.](report/land-use/ternary-roof.svg){#fig:ternary-land-use-roof .class}
 
 ![**Cost and land use of fully renewable electricity systems with different shares of rooftop PV, utility-scale PV, and onshore wind.** All systems contain no offshore wind capacity. Cost is relative to minimal cost. Land use is relative to land use of the minimal-cost case. **a,** Cost and land use of all cases. The red line indicates the Pareto frontier on which neither cost nor land use can be reduced without increasing the respective other. **b,** Cost and land use of all cases. Darker colours indicate the share of rooftop PV (top), utility-scale PV (middle), and onshore wind (bottom).](report/land-use/scatter-roof.svg){#fig:scatter-land-use-roof .class}

@@ -58,6 +58,7 @@ rule report:
         "report/fonts/KlinicSlabMedium.otf",
         "report/fonts/KlinicSlabMediumIt.otf",
         "report/report.css",
+        "build/output/{resolution}/report/map.png",
         "build/output/{resolution}/report/land-use/ternary-roof.svg",
         "build/output/{resolution}/report/land-use/scatter-roof.svg",
         "build/output/{resolution}/report/land-use/ternary-offshore.svg",

@@ -68,6 +68,18 @@ rule aggregated_results:
     script: "../src/analyse/aggregation.py"
 
 
+rule land_use_map:
+    message: "Create map depicting land use."
+    input:
+        src = "src/analyse/land_use_map.py",
+        results = rules.aggregated_results.output[0],
+        shapes = eurocalliope("build/data/national/units.geojson"),
+    params: land_factors = config["parameters"]["land-use"]
+    conda: "../envs/default.yaml"
+    output: "build/output/{resolution}/map.png"
+    script: "../src/analyse/land_use_map.py"
+
+
 rule ternary_plots:
     message: "Create ternary plots of results."
     input:
