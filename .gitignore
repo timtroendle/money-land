@@ -44,3 +44,4 @@ notebooks/
 # Snakemake
 .snakemake/
 dag.pdf
+report/report

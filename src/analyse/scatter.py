@@ -39,7 +39,7 @@ ANNOTATIONS = {
     "roof": {
         "footprint-only": (),
         "land-use": (
-            Annotation(text="30% utility-scale PV\n70% onshore wind\n", xy=(3, 7, 0), xytext=(0.4, 1.4)),
+            Annotation(text="30% utility-scale PV\n70% onshore wind", xy=(3, 7, 0), xytext=(0.4, 1.4)),
             Annotation(text="100% utility-scale PV", xy=(10, 0, 0), xytext=(0.25, 1.7)),
             Annotation(text="100% rooftop PV", xy=(0, 0, 10), xytext=(0.25, 1.8)),
             Annotation(text="100% onshore wind", xy=(0, 10, 0), xytext=(0.9, 1.3))
@@ -47,7 +47,12 @@ ANNOTATIONS = {
     },
     "offshore": {
         "footprint-only": (),
-        "land-use": ()
+        "land-use": (
+            Annotation(text="30% utility-scale PV\n70% onshore wind", xy=(3, 7, 0), xytext=(1.0, 1.2)),
+            Annotation(text="30% utility-scale PV\n70% offshore wind", xy=(3, 0, 7), xytext=(0.2, 1.3)),
+            Annotation(text="40% utility-scale PV\n30% onshore wind\n30% offshore wind", xy=(4, 3, 3),
+                       xytext=(0.5, 1.18))
+        )
     }
 }
 PARETO_POINTS_INDEX = {
@@ -101,7 +106,7 @@ def scatter(path_to_results, case, land_definition, land_use_factors, path_to_pl
         color=RED
     )
     sns.scatterplot(
-        data=plot_data.data,
+        data=plot_data.data.reset_index(),
         y="cost",
         x="land_use",
         legend=False,
@@ -119,13 +124,13 @@ def scatter(path_to_results, case, land_definition, land_use_factors, path_to_pl
     for annotation in plot_data.annotations:
         ax_main.annotate(
             annotation.text,
-            xy=(plot_data.data.set_index(["util", "wind", "roof"]).loc[annotation.xy].values),
+            xy=(plot_data.data.loc[annotation.xy].values),
             xytext=annotation.xytext,
             arrowprops={"arrowstyle": "->"}
         )
 
     sns.scatterplot(
-        data=plot_data.data,
+        data=plot_data.data.reset_index(),
         y="cost",
         x="land_use",
         hue=plot_data.case,
@@ -144,7 +149,7 @@ def scatter(path_to_results, case, land_definition, land_use_factors, path_to_pl
                     fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
 
     sns.scatterplot(
-        data=plot_data.data,
+        data=plot_data.data.reset_index(),
         y="cost",
         x="land_use",
         hue="util",
@@ -161,7 +166,7 @@ def scatter(path_to_results, case, land_definition, land_use_factors, path_to_pl
     ax_util.set_ylabel("")
 
     sns.scatterplot(
-        data=plot_data.data,
+        data=plot_data.data.reset_index(),
         y="cost",
         x="land_use",
         hue="wind",
@@ -203,7 +208,7 @@ def read_data(path_to_data, case, land_definition, land_use_factors):
     if case == "roof":
         case_title = "Rooftop PV"
     else:
-        case_title = "Offshore wind",
+        case_title = "Offshore wind"
 
     pareto_index = PARETO_POINTS_INDEX[case][land_definition]
     if len(pareto_index) > 0: # manually defined
@@ -212,7 +217,7 @@ def read_data(path_to_data, case, land_definition, land_use_factors):
         pareto_points = both_data.loc[is_pareto_efficient(both_data.values), :].sort_values("cost")
 
     return PlotData(
-        data=both_data.reset_index(),
+        data=both_data,
         pareto_points=pareto_points,
         case=case,
         case_title=case_title,
