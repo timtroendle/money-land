@@ -48,4 +48,17 @@ The approach is a poor man's approach, because the system design depends on the 
 
 I should, however, discuss the effect qualitatively. Also, I should discuss qualitatively the impact of electrifying the heat sector.
 
+# Methods
+
+I use the cost-minimising linear programming model introduced in ref [@Trondle:inreview]. I use a national spatial, and a 4h temporal resolution. I enforce national self-sufficiency, meaning that each country has to generate enough electricity to fulfil annual, domestic electricity demand.
+
+Within this base model, for each considered case I enforce shares for four different supply technologies: onshore wind, offshore wind, utility-scale PV, and rooftop PV. I enforce relative installed capacity only, not the total amount of installed capacity. Because balancing losses are different in different cases, and because hydropower and biomass can supply electricity as well, the total installed capacity of wind and solar varies between the cases. For each case, the cost optimisation determines the cost-minimal total installed capacity of wind and solar, and the cost-minimal balancing capacities in each country. Balancing capacities comprise short-term storage (battery), long-term storage (hydrogen), bioenergy, and transmission.
+
+I consider the land use factors as defined in ref [@Trondle:inreview] to determine land use based on installed capacity:
+
+* onshore wind: 1 / 8 km^2^ / MW
+* utility-scale PV: 1 / 80 km^2^ / MW
+* offshore wind: 0 km^2^ / MW
+* rooftop PV: 0 km^2^ / MW
+
 # Bibliography
