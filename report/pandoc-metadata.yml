@@ -7,6 +7,12 @@ tags:
     - 'reproducible-research'
 abstract: |
     Trade-off between land use and cost of renewable electricity in Europe.
+highlights:
+    - Cost-minimal renewable electricity in Europe requires 120,000 km^2^ onshore land (2.5%).
+    - Land use can be reduced significantly with only small cost penalities.
+    - Offshore wind allows to reduce onshore land use for 0.2 EUR / m^2^ / yr.
+    - Utility-scale PV allows to reduce land use for 0.7 EUR / m^2^ / yr.
+    - Rooftop PV has highest cost of land use decreases of up to 4.6 EUR / m^2^ / yr.
 bibliography:
     - 'literature.bib'
 csl: 'plos-one.csl'
