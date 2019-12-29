@@ -9,7 +9,7 @@ abstract: |
     Trade-off between land use and cost of renewable electricity in Europe.
 bibliography:
     - 'literature.bib'
-csl: 'energy-policy.csl'
+csl: 'plos-one.csl'
 link-citations: True
 date: draft-01-dev
 ---

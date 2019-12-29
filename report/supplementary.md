@@ -6,7 +6,7 @@ author:
 institute: IASS Potsdam and ETH Zürich
 bibliography:
     - 'literature.bib'
-csl: energy-policy.csl
+csl: plos-one.csl
 link-citations: True
 date: draft-01-dev
 ---
