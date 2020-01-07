@@ -112,6 +112,17 @@ rule flexibility_plot:
     script: "../src/analyse/flexibility.py"
 
 
+rule technology_stats:
+    message: "Create stats for single technologies."
+    input:
+        src = "src/analyse/technology.py",
+        results = rules.aggregated_results.output[0]
+    params: land_factors = lambda wildcards: config["parameters"][wildcards["land"]]
+    conda: "../envs/default.yaml"
+    output: "build/output/{resolution}/{land}/technology-stats.csv"
+    script: "../src/analyse/technology.py"
+
+
 rule test:
     message: "Run tests"
     input:
