@@ -34,9 +34,21 @@ def excavate_all_results(paths_to_scenarios, path_to_units, scaling_factors, pat
         variable_name: exporter(variable_name)
         for variable_name in VARIABLE_SCALING_FACTOR.keys()
     })
+    roof = ds.scenario.copy()
+    roof.values = [int(scenario.split("-")[1]) for scenario in ds.scenario.values]
+    util = ds.scenario.copy()
+    util.values = [int(scenario.split("-")[3]) for scenario in ds.scenario.values]
+    wind = ds.scenario.copy()
+    wind.values = [int(scenario.split("-")[5]) for scenario in ds.scenario.values]
+    offshore = ds.scenario.copy()
+    offshore.values = [int(scenario.split("-")[7]) for scenario in ds.scenario.values]
     ds.coords["country_code"] = units.country_code
     ds.coords["tech_group"] = list(scenarios.values())[0].get_formatted_array("inheritance")
     ds.coords["tech_group"].loc[:] = [parent.split('.')[-1] for parent in ds["tech_group"].values]
+    ds.coords["roof"] = roof
+    ds.coords["util"] = util
+    ds.coords["wind"] = wind
+    ds.coords["offshore"] = offshore
     ds.to_netcdf(path_to_output)
 
 

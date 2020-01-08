@@ -33,6 +33,22 @@ class CostFactors:
         return cost * factors
 
 
+@dataclass
+class LandUseFactors:
+    wind_onshore: float
+    wind_offshore: float
+    roof_mounted_pv: float
+    open_field_pv: float
+
+    def apply_to_energy_cap(self, energy_cap):
+        factors = xr.zeros_like(energy_cap)
+        factors.loc[{"techs": ["wind_onshore_competing", "wind_onshore_monopoly"]}] = self.wind_onshore
+        factors.loc[{"techs": "wind_offshore"}] = self.wind_offshore
+        factors.loc[{"techs": "roof_mounted_pv"}] = self.roof_mounted_pv
+        factors.loc[{"techs": "open_field_pv"}] = self.open_field_pv
+        return energy_cap * factors
+
+
 def uncertainty_analysis(path_to_results, land_use_factors, path_to_xy, path_to_sobol):
     problem = { # FIXME inject the problem from config
         'num_vars': 4,
@@ -48,27 +64,40 @@ def uncertainty_analysis(path_to_results, land_use_factors, path_to_xy, path_to_
     param_values = saltelli.sample(problem, 100)
 
     data = xr.open_dataset(path_to_results)
-    y = np.zeros([param_values.shape[0]])
+    ys = np.zeros([param_values.shape[0], 5])
     for i, x in enumerate(param_values):
-        y[i] = evaluate_model(data, land_use_factors, x)
+        ys[i] = evaluate_model(data, land_use_factors, x)
 
     (
         pd
         .DataFrame(param_values, columns=problem["names"])
-        .assign(land_use=y)
+        .assign(
+            land_use=ys.T[0],
+            optimal_util=ys.T[1],
+            optimal_wind=ys.T[2],
+            optimal_roof=ys.T[3],
+            optimal_offshore=ys.T[4],
+        )
         .to_csv(path_to_xy, index=True, header=True)
     )
 
-    indices = sobol.analyze(problem, y)
-
     with open(path_to_sobol, "w") as f_out:
-        print_indices(indices, problem, True, f_out)
+        for i, y in enumerate(ys.T):
+            indices = sobol.analyze(problem, y)
+            print_indices(indices, problem, True, f_out)
 
 
 def evaluate_model(data, land_use_factors, x):
     cost_factors = CostFactors.from_x(x)
     data = read_data(data, land_use_factors, cost_factors)
-    return data.land_use.loc[data.cost.idxmin()]
+    optimal_index = data.cost.idxmin()
+    return (
+        data.land_use.loc[optimal_index],
+        optimal_index[0],
+        optimal_index[1],
+        optimal_index[2],
+        optimal_index[3]
+    )
 
 
 def read_data(data, land_use_factors, cost_factors):
@@ -76,28 +105,22 @@ def read_data(data, land_use_factors, cost_factors):
         cost_factors
         .apply_to_cost(data.cost.sum("locs"))
         .sum("techs")
-        .to_series()
+        .to_dataframe()
+        .set_index(["util", "wind", "roof", "offshore"])
+        .loc[:, "cost"]
     )
-    land_use_data = ((
-        data
-        .energy_cap
-        .sum("locs")
-        .sel(techs=["wind_onshore_monopoly", "wind_onshore_competing", "wind_offshore",
-                    "roof_mounted_pv", "open_field_pv"])
-    ) * land_use_factors).sum("techs").to_series()
+    land_use_data = (
+        land_use_factors
+        .apply_to_energy_cap(data.energy_cap.sum("locs"))
+        .sum("techs")
+        .to_dataframe(name="land_use")
+        .set_index(["util", "wind", "roof", "offshore"])
+        .loc[:, "land_use"]
+    )
 
     both_data = pd.DataFrame({"land_use": land_use_data, "cost": cost_data})
 
     return both_data
-
-
-def scenario_name_to_multiindex(index):
-    return index.map(wxyz).rename(["util", "wind", "roof", "offshore"])
-
-
-def wxyz(scenario_name):
-    roof, util, wind, offshore = tuple(int(x.split("-")[1]) for x in scenario_name.split(","))
-    return (util, wind, roof, offshore)
 
 
 def print_indices(S, problem, calc_second_order, file):
@@ -131,7 +154,12 @@ def print_indices(S, problem, calc_second_order, file):
 if __name__ == "__main__":
     uncertainty_analysis(
         path_to_results=snakemake.input.results,
-        land_use_factors=pd.Series(snakemake.params.land_factors).to_xarray().rename(index="techs"),
+        land_use_factors=LandUseFactors(
+            wind_onshore=snakemake.params.land_factors["wind_onshore_monopoly"],
+            wind_offshore=snakemake.params.land_factors["wind_offshore"],
+            roof_mounted_pv=snakemake.params.land_factors["roof_mounted_pv"],
+            open_field_pv=snakemake.params.land_factors["open_field_pv"]
+        ),
         path_to_xy=snakemake.output.xy,
         path_to_sobol=snakemake.output.sobol
     )
