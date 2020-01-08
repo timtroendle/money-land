@@ -25,6 +25,7 @@ parameters:
 resolution:
     space: continental
     time: 1D
+number-uncertainty-runs: 100
 calliope-parameters: # arbitrary many calliope parameters applied as override
     model.subset_time: ['2016-01-01', '2016-12-31']
 year: 2016

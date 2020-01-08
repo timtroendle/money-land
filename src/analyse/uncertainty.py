@@ -49,7 +49,7 @@ class LandUseFactors:
         return energy_cap * factors
 
 
-def uncertainty_analysis(path_to_results, land_use_factors, path_to_xy, path_to_sobol):
+def uncertainty_analysis(path_to_results, land_use_factors, number_uncertainty_runs, path_to_xy, path_to_sobol):
     problem = { # FIXME inject the problem from config
         'num_vars': 4,
         'names': ['cost-wind-onshore',
@@ -61,7 +61,7 @@ def uncertainty_analysis(path_to_results, land_use_factors, path_to_xy, path_to_
                    [760 / 880, 1000 / 880],
                    [280 / 520, 580 / 520]] # TODO link to roof mounted PV?
     }
-    param_values = saltelli.sample(problem, 100)
+    param_values = saltelli.sample(problem, number_uncertainty_runs)
 
     data = xr.open_dataset(path_to_results)
     ys = np.zeros([param_values.shape[0], 5])
@@ -90,13 +90,14 @@ def uncertainty_analysis(path_to_results, land_use_factors, path_to_xy, path_to_
 def evaluate_model(data, land_use_factors, x):
     cost_factors = CostFactors.from_x(x)
     data = read_data(data, land_use_factors, cost_factors)
-    optimal_index = data.cost.idxmin()
+    optimal_scenario = data.cost[data.cost == data.cost.min()].isel(scenario=0).scenario.item()
+    optimal_data = data.sel(scenario=optimal_scenario)
     return (
-        data.land_use.loc[optimal_index],
-        optimal_index[0],
-        optimal_index[1],
-        optimal_index[2],
-        optimal_index[3]
+        optimal_data.land_use.item(),
+        optimal_data.util.item(),
+        optimal_data.wind.item(),
+        optimal_data.roof.item(),
+        optimal_data.offshore.item()
     )
 
 
@@ -105,22 +106,14 @@ def read_data(data, land_use_factors, cost_factors):
         cost_factors
         .apply_to_cost(data.cost.sum("locs"))
         .sum("techs")
-        .to_dataframe()
-        .set_index(["util", "wind", "roof", "offshore"])
-        .loc[:, "cost"]
     )
     land_use_data = (
         land_use_factors
         .apply_to_energy_cap(data.energy_cap.sum("locs"))
         .sum("techs")
-        .to_dataframe(name="land_use")
-        .set_index(["util", "wind", "roof", "offshore"])
-        .loc[:, "land_use"]
+        .rename("land_use")
     )
-
-    both_data = pd.DataFrame({"land_use": land_use_data, "cost": cost_data})
-
-    return both_data
+    return xr.Dataset({"cost": cost_data, "land_use": land_use_data})
 
 
 def print_indices(S, problem, calc_second_order, file):
@@ -160,6 +153,7 @@ if __name__ == "__main__":
             roof_mounted_pv=snakemake.params.land_factors["roof_mounted_pv"],
             open_field_pv=snakemake.params.land_factors["open_field_pv"]
         ),
+        number_uncertainty_runs=snakemake.params.runs,
         path_to_xy=snakemake.output.xy,
         path_to_sobol=snakemake.output.sobol
     )

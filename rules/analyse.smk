@@ -73,7 +73,9 @@ rule uncertainty_analysis:
     input:
         src = "src/analyse/uncertainty.py",
         results = rules.aggregated_results.output[0]
-    params: land_factors = lambda wildcards: config["parameters"][wildcards["land"]]
+    params:
+        land_factors = lambda wildcards: config["parameters"][wildcards["land"]],
+        runs = config["number-uncertainty-runs"]
     conda: "../envs/default.yaml"
     output:
         xy = "build/output/{resolution}/{land}/uncertainty-xy.csv",
