@@ -38,7 +38,7 @@ rule run_continental:
         resolution = "continental",
         no_shore = config["units-without-shore"]["continental"]
     output: "build/output/continental/runs/roof-{roof}-util-{util}-wind-{wind}-offshore-{offshore}.nc"
-    conda: "../envs/default.yaml"
+    conda: "../envs/calliope.yaml"
     script: "../src/analyse/run.py"
 
 
@@ -52,7 +52,7 @@ rule run_national:
         resolution = "national",
         no_shore = config["units-without-shore"]["national"]
     output: "build/output/national/runs/roof-{roof}-util-{util}-wind-{wind}-offshore-{offshore}.nc"
-    conda: "../envs/default.yaml"
+    conda: "../envs/calliope.yaml"
     script: "../src/analyse/run.py"
 
 
@@ -63,7 +63,7 @@ rule aggregated_results:
         scenarios = ALL_SCENARIOS,
         units = eurocalliope("build/data/{resolution}/units.csv")
     params: scaling_factors = config["scaling-factors"]
-    conda: "../envs/default.yaml"
+    conda: "../envs/calliope.yaml"
     output: "build/output/{resolution}/aggregation.nc"
     script: "../src/analyse/aggregation.py"
 
