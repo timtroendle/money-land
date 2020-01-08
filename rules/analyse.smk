@@ -68,6 +68,19 @@ rule aggregated_results:
     script: "../src/analyse/aggregation.py"
 
 
+rule uncertainty_analysis:
+    message: "Analysis impact of cost uncertainty."
+    input:
+        src = "src/analyse/uncertainty.py",
+        results = rules.aggregated_results.output[0]
+    params: land_factors = lambda wildcards: config["parameters"][wildcards["land"]]
+    conda: "../envs/default.yaml"
+    output:
+        xy = "build/output/{resolution}/{land}/uncertainty-xy.csv",
+        sobol = "build/output/{resolution}/{land}/uncertainty-sobol.txt"
+    script: "../src/analyse/uncertainty.py"
+
+
 rule land_use_map:
     message: "Create map depicting land use."
     input:
