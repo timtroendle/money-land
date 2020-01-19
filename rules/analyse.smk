@@ -102,7 +102,7 @@ rule ternary_plots:
         results = rules.aggregated_results.output[0]
     params: land_factors = lambda wildcards: config["parameters"][wildcards["land"]]
     conda: "../envs/default.yaml"
-    output: "build/output/{resolution}/{land}/ternary-{case}.{plot_suffix}"
+    output: "build/output/{resolution}/{land}/ternary.{plot_suffix}"
     script: "../src/analyse/ternary.py"
 
 

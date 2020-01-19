@@ -22,91 +22,94 @@ RED_TO_BLUE = [ # from https://gka.github.io using lightness correction
 ]
 DIVERGING_PALETTE = matplotlib.colors.LinearSegmentedColormap.from_list("signature-BlRd", RED_TO_BLUE)
 
+idx = pd.IndexSlice
+
 
 @dataclass
 class PlotData:
     data: pd.Series
     norm: matplotlib.colors.Normalize
     left_axis_label: str
+    panel_name: str
     bottom_axis_label: str = "Utility-scale PV (%) →"
     right_axis_label: str = "← Onshore wind (%)"
 
 
-def plot_both_ternary(path_to_data, case, land_use_factors, path_to_plot):
-    assert case in ["roof", "offshore"]
-    plot_data_cost, plot_data_land_use = read_data(path_to_data, case, land_use_factors)
-
+def plot_both_ternary(path_to_data, land_use_factors, path_to_plot):
+    plot_datas = read_data(path_to_data, land_use_factors)
     sns.set_context("paper")
-    fig = plt.figure(figsize=(8, 3.5))
-    gs = gridspec.GridSpec(1, 5, width_ratios=[5, 0.1, 1, 5, 0.1])
-    ax_1 = fig.add_subplot(gs[0])
-    ax_2 = fig.add_subplot(gs[3])
-    cbar_ax_1 = fig.add_subplot(gs[1])
-    cbar_ax_2 = fig.add_subplot(gs[4])
+    fig = plt.figure(figsize=(8, 8))
+    gs = gridspec.GridSpec(3, 2, width_ratios=[5, 5], height_ratios=[20, 20, 1])
+    ax_1 = fig.add_subplot(gs[0, 0])
+    ax_2 = fig.add_subplot(gs[0, 1])
+    ax_3 = fig.add_subplot(gs[1, 0])
+    ax_4 = fig.add_subplot(gs[1, 1])
+    cbar_ax_1 = fig.add_subplot(gs[2, 0])
+    cbar_ax_2 = fig.add_subplot(gs[2, 1])
 
-    plot_ternary(plot_data_cost, ax=ax_1, cmap=SEQUENTIAL_PALETTE)
-    plot_colorbar(fig, cbar_ax_1, plot_data_cost.norm, cmap=SEQUENTIAL_PALETTE)
-    ax_1.annotate('a - Cost', xy=[-0.08, 1.05], xycoords='axes fraction',
-                  fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
+    plot_ternary(plot_datas[0], ax=ax_1, cmap=SEQUENTIAL_PALETTE)
+    plot_ternary(plot_datas[1], ax=ax_2, cmap=DIVERGING_PALETTE)
+    plot_ternary(plot_datas[2], ax=ax_3, cmap=SEQUENTIAL_PALETTE)
+    plot_ternary(plot_datas[3], ax=ax_4, cmap=DIVERGING_PALETTE)
 
-    plot_ternary(plot_data_land_use, ax=ax_2, cmap=DIVERGING_PALETTE)
-    plot_colorbar(fig, cbar_ax_2, plot_data_land_use.norm, cmap=DIVERGING_PALETTE)
-    ax_2.annotate('b - Land use', xy=[-0.08, 1.05], xycoords='axes fraction',
-                  fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
+    plot_sequential_colorbar(fig, cbar_ax_1, plot_datas[0].norm, cmap=SEQUENTIAL_PALETTE,
+                  label="Cost relative to cost minimal case")
+    plot_diverging_colorbar(fig, cbar_ax_2, plot_datas[1].norm, cmap=DIVERGING_PALETTE,
+                  label="Land use relative to cost minimal case",
+                  land_use_data=plot_datas[1].data)
 
     plt.subplots_adjust(
         left=0.05,
         bottom=0.05,
         right=0.95,
-        top=0.90,
+        top=0.95,
         wspace=0.2,
         hspace=0.2
     )
     fig.savefig(path_to_plot, dpi=600)
 
 
-def read_data(path_to_data, case, land_use_factors):
-    data = xr.open_dataset(path_to_data)
-    cost_data = data.cost.sum(["locs", "techs"]).to_series()
-    cost_data = (cost_data / cost_data.min())
-    land_use_data = ((
-        data
-        .energy_cap
-        .sum("locs")
-        .sel(techs=["wind_onshore_monopoly", "wind_onshore_competing", "wind_offshore",
-                    "roof_mounted_pv", "open_field_pv"])
-    ) * land_use_factors).sum("techs").to_series()
-    land_use_data = (land_use_data / land_use_data[cost_data[cost_data == cost_data.min()].index].values[0])
-
-    cost_data.index = scenario_name_to_multiindex(cost_data.index)
-    cost_data = filter_three_dimensions(cost_data, case)
-    land_use_data.index = scenario_name_to_multiindex(land_use_data.index)
-    land_use_data = filter_three_dimensions(land_use_data, case)
-    if case == "roof":
-        left_axis_label = "← Rooftop PV (%)"
-    else:
-        left_axis_label = "← Offshore wind (%)"
-
-    plot_data_cost = PlotData(
-        data=cost_data,
-        left_axis_label=left_axis_label,
-        norm=matplotlib.colors.Normalize(vmin=cost_data.min(), vmax=cost_data.max())
+def read_data(path_to_data, land_use_factors):
+    data = xr.open_dataset(path_to_data).sum("locs")
+    data["roof"] = data["roof"] // 10
+    data["util"] = data["util"] // 10
+    data["wind"] = data["wind"] // 10
+    data["offshore"] = data["offshore"] // 10
+    data["land_use"] = data["energy_cap"] * land_use_factors
+    data = (
+        data[["cost", "land_use"]]
+        .sum("techs")
+        .sel(scenario=(data.roof == 0) | (data.offshore == 0))
+        .to_dataframe()
+        .set_index(["util", "wind", "roof", "offshore"])
     )
-    plot_data_land_use = PlotData(
-        data=land_use_data,
-        left_axis_label=left_axis_label,
-        norm=matplotlib.colors.Normalize(vmin=land_use_data.min(), vmax=1 + (1 - land_use_data.min()))
-    )
-    return plot_data_cost, plot_data_land_use
-
-
-def scenario_name_to_multiindex(index):
-    return index.map(wxyz).rename(["util", "wind", "roof", "offshore"])
-
-
-def wxyz(scenario_name):
-    roof, util, wind, offshore = tuple(int(x.split("-")[1]) // 10 for x in scenario_name.split(","))
-    return (util, wind, roof, offshore)
+    data = data / data.loc[data.cost.idxmin()]
+    return [
+        PlotData(
+            data=filter_three_dimensions(data.cost, "roof"),
+            left_axis_label="← Rooftop PV (%)",
+            norm=matplotlib.colors.Normalize(vmin=data.cost.min(), vmax=data.cost.max()),
+            panel_name="a - Cost without\n     offshore wind"
+        ),
+        PlotData(
+            data=filter_three_dimensions(data.land_use, "roof"),
+            left_axis_label="← Rooftop PV (%)",
+            norm=matplotlib.colors.Normalize(vmin=data.land_use.min(), vmax=1 + (1 - data.land_use.min())),
+            panel_name="b - Land use without\n     offshore wind"
+        ),
+        PlotData(
+            data=filter_three_dimensions(data.cost, "offshore"),
+            left_axis_label="← Offshore wind (%)",
+            norm=matplotlib.colors.Normalize(vmin=data.cost.min(), vmax=data.cost.max()),
+            panel_name="c - Cost without\n     rooftop PV"
+        ),
+        PlotData(
+            data=filter_three_dimensions(data.land_use, "offshore"),
+            left_axis_label="← Offshore wind (%)",
+            norm=matplotlib.colors.Normalize(vmin=data.land_use.min(), vmax=1 + (1 - data.land_use.min())),
+            panel_name="d - Land use without\n     rooftop PV"
+        )
+    ]
 
 
 def filter_three_dimensions(data, case):
@@ -148,12 +151,14 @@ def plot_ternary(plot_data, ax, cmap):
     tax.ticks(ticks=range(0, 110, 20), axis='r', linewidth=1, multiple=1, offset=0.04, fontsize=TICK_FONT_SIZE)
     tax.clear_matplotlib_ticks()
     tax._redraw_labels()
+    ax.annotate(plot_data.panel_name, xy=[-0.08, 0.95], xycoords='axes fraction',
+                fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
 
 
-def plot_colorbar(fig, ax, norm, cmap):
+def plot_sequential_colorbar(fig, ax, norm, cmap, label):
     s_m = matplotlib.cm.ScalarMappable(cmap=cmap, norm=norm)
     s_m.set_array([])
-    cbar = fig.colorbar(s_m, ax=ax, fraction=1, aspect=35, shrink=1.0)
+    cbar = fig.colorbar(s_m, ax=ax, fraction=1, aspect=35, shrink=1.0, orientation="horizontal")
     cbar_ticks = np.linspace(
         start=norm.vmin,
         stop=norm.vmax,
@@ -163,6 +168,7 @@ def plot_colorbar(fig, ax, norm, cmap):
     cbar.set_ticklabels(["{:.1f}".format(tick)
                          for tick in cbar.get_ticks()])
     cbar.outline.set_linewidth(0)
+    cbar.set_label(label)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
@@ -170,17 +176,25 @@ def plot_colorbar(fig, ax, norm, cmap):
     ax.axis('off')
 
 
-def plot_other_colorbar(fig, ax, norm, s_m):
-    cbar = fig.colorbar(s_m, ax=ax, fraction=1, aspect=35, shrink=0.65)
+def plot_diverging_colorbar(fig, ax, norm, cmap, label, land_use_data):
+    s_m = matplotlib.cm.ScalarMappable(cmap=cmap, norm=norm)
+    cmap = s_m.get_cmap()
+    rel_max = (land_use_data.max() - land_use_data.min()) / (norm.vmax - norm.vmin)
+    colors = cmap(np.linspace(0, rel_max, cmap.N))
+    cmap = matplotlib.colors.LinearSegmentedColormap.from_list('cut_jet', colors)
+    s_m = matplotlib.cm.ScalarMappable(cmap=cmap, norm=matplotlib.colors.Normalize(vmin=0, vmax=land_use_data.max()))
+    s_m.set_array([])
+    cbar = fig.colorbar(s_m, ax=ax, fraction=1, aspect=35, shrink=1.0, orientation="horizontal")
     cbar_ticks = np.linspace(
-        start=norm.vmin,
-        stop=norm.vmax,
-        num=4
+        start=land_use_data.min(),
+        stop=land_use_data.max(),
+        num=6
     )
     cbar.set_ticks(cbar_ticks)
     cbar.set_ticklabels(["{:.1f}".format(tick)
                          for tick in cbar.get_ticks()])
     cbar.outline.set_linewidth(0)
+    cbar.set_label(label)
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.spines['bottom'].set_visible(False)
@@ -191,7 +205,6 @@ def plot_other_colorbar(fig, ax, norm, s_m):
 if __name__ == "__main__":
     plot_both_ternary(
         path_to_data=snakemake.input.results,
-        case=snakemake.wildcards.case,
         land_use_factors=pd.Series(snakemake.params.land_factors).to_xarray().rename(index="techs"),
         path_to_plot=snakemake.output[0]
     )

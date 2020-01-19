@@ -67,9 +67,8 @@ rule report:
         "report/report.md",
         "report/pandoc-metadata.yml",
         "build/output/{resolution}/report/map.png",
-        "build/output/{resolution}/report/land-use/ternary-roof.svg",
+        "build/output/{resolution}/report/land-use/ternary.svg",
         "build/output/{resolution}/report/land-use/scatter-roof.svg",
-        "build/output/{resolution}/report/land-use/ternary-offshore.svg",
         "build/output/{resolution}/report/land-use/scatter-offshore.svg",
         "build/output/{resolution}/report/flexibility.svg"
     params: options = pandoc_options
@@ -92,9 +91,8 @@ rule supplementary_material:
     input:
         GENERAL_DOCUMENT_DEPENDENCIES,
         "report/supplementary.md",
-        "build/output/{resolution}/report/footprint-only/ternary-roof.svg",
+        "build/output/{resolution}/report/footprint-only/ternary.svg",
         "build/output/{resolution}/report/footprint-only/scatter-roof.svg",
-        "build/output/{resolution}/report/footprint-only/ternary-offshore.svg",
         "build/output/{resolution}/report/footprint-only/scatter-offshore.svg"
     params: options = pandoc_options
     output: "build/output/{resolution}/supplementary.{suffix}"
