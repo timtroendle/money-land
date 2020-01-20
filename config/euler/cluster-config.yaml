@@ -12,7 +12,7 @@ run_national:
     cores: 6
     memory: 6000
 aggregated_results:
-    runtime: 30
+    runtime: 60
 test:
     runtime: 30
 uncertainty_analysis:

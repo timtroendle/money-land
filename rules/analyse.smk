@@ -9,18 +9,12 @@ CALLIOPE_OVERRIDE_DICT = {
 CAPACITY_SHARE_SAMPLES = list(range(0, 110, 10))
 ALL_SCENARIOS = (
     [
-        f"build/output/{{resolution}}/runs/roof-{roof}-util-{util}-wind-{wind}-offshore-0.nc"
+        f"build/output/{{resolution}}/runs/roof-{roof}-util-{util}-wind-{wind}-offshore-{offshore}.nc"
         for roof in CAPACITY_SHARE_SAMPLES
         for util in CAPACITY_SHARE_SAMPLES
         for wind in CAPACITY_SHARE_SAMPLES
-        if roof + util + wind == 100
-    ] +
-    [
-        f"build/output/{{resolution}}/runs/roof-0-util-{util}-wind-{wind}-offshore-{offshore}.nc"
         for offshore in CAPACITY_SHARE_SAMPLES
-        for util in CAPACITY_SHARE_SAMPLES
-        for wind in CAPACITY_SHARE_SAMPLES
-        if offshore + util + wind == 100
+        if roof + util + wind + offshore == 100
     ]
 )
 wildcard_constraints:
