@@ -143,6 +143,16 @@ rule technology_plot:
     script: "../src/analyse/technology_plot.py"
 
 
+rule uncertainty_plot:
+    message: "Create plot of uncertainty."
+    input:
+        src = "src/analyse/uncertainty_plot.py",
+        xy = rules.uncertainty_analysis.output[0]
+    conda: "../envs/default.yaml"
+    output: "build/output/{resolution}/{land}/uncertainty.{plot_suffix}"
+    script: "../src/analyse/uncertainty_plot.py"
+
+
 rule test:
     message: "Run tests"
     input:

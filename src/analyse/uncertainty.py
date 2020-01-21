@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import functools
 
 import numpy as np
 import pandas as pd
@@ -6,6 +7,8 @@ import xarray as xr
 from SALib.sample import saltelli
 from SALib.analyze import sobol
 from SALib.util import compute_groups_matrix
+
+ALL_TECHS = ["roof", "util", "wind", "offshore"]
 
 
 @dataclass
@@ -64,7 +67,7 @@ def uncertainty_analysis(path_to_results, land_use_factors, number_uncertainty_r
     param_values = saltelli.sample(problem, number_uncertainty_runs)
 
     data = xr.open_dataset(path_to_results)
-    ys = np.zeros([param_values.shape[0], 5])
+    ys = np.zeros([param_values.shape[0], 10])
     for i, x in enumerate(param_values):
         ys[i] = evaluate_model(data, land_use_factors, x)
 
@@ -72,11 +75,16 @@ def uncertainty_analysis(path_to_results, land_use_factors, number_uncertainty_r
         pd
         .DataFrame(param_values, columns=problem["names"])
         .assign(
-            land_use=ys.T[0],
-            optimal_util=ys.T[1],
-            optimal_wind=ys.T[2],
-            optimal_roof=ys.T[3],
-            optimal_offshore=ys.T[4],
+            optimal_cost=ys.T[0],
+            optimal_land_use=ys.T[1],
+            optimal_util=ys.T[2],
+            optimal_wind=ys.T[3],
+            optimal_roof=ys.T[4],
+            optimal_offshore=ys.T[5],
+            r50_cost_util=ys.T[6],
+            r50_cost_offshore=ys.T[7],
+            r50_cost_roof=ys.T[8],
+            r50_cost_wind=ys.T[9]
         )
         .to_csv(path_to_xy, index=True, header=True)
     )
@@ -92,13 +100,40 @@ def evaluate_model(data, land_use_factors, x):
     data = read_data(data, land_use_factors, cost_factors)
     optimal_scenario = data.cost[data.cost == data.cost.min()].isel(scenario=0).scenario.item()
     optimal_data = data.sel(scenario=optimal_scenario)
+    optimal_data = {
+        key: optimal_data[key].item()
+        for key in ("cost", "land_use", "roof", "util", "wind", "offshore")
+    }
     return (
-        optimal_data.land_use.item(),
-        optimal_data.util.item(),
-        optimal_data.wind.item(),
-        optimal_data.roof.item(),
-        optimal_data.offshore.item()
+        optimal_data["cost"],
+        optimal_data["land_use"],
+        optimal_data["util"],
+        optimal_data["wind"],
+        optimal_data["roof"],
+        optimal_data["offshore"],
+        r50_cost(data, optimal_data, "util"),
+        r50_cost(data, optimal_data, "offshore"),
+        r50_cost(data, optimal_data, "roof"),
+        r50_cost(data, optimal_data, "wind")
     )
+
+
+def r50_cost(data, optimal_data, tech):
+    """Calculates relative cost of reducing land use by 50% using a single technology."""
+    conditions = [
+        data[other_tech] <= optimal_data[other_tech]
+        for other_tech in ALL_TECHS
+        if other_tech != tech
+    ]
+    conditions.append(data.land_use <= 0.5 * optimal_data["land_use"])
+    mask = functools.reduce(lambda x, y: x & y, conditions)
+    if len(data.sel(scenario=mask).scenario) > 0:
+        optimal_data_50 = data.sel(scenario=mask).sortby("cost").isel(scenario=0)
+        delta_cost_eur = optimal_data_50.cost.item() - optimal_data["cost"]
+        delta_land_m2 = (optimal_data_50.land_use.item() - optimal_data["land_use"]) * 1e6
+        return delta_cost_eur / delta_land_m2
+    else:
+        return np.nan
 
 
 def read_data(data, land_use_factors, cost_factors):
