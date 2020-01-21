@@ -132,6 +132,17 @@ rule technology_stats:
     script: "../src/analyse/technology.py"
 
 
+rule technology_plot:
+    message: "Create plot for single technologies."
+    input:
+        src = "src/analyse/technology_plot.py",
+        results = rules.aggregated_results.output[0]
+    params: land_factors = lambda wildcards: config["parameters"][wildcards["land"]]
+    conda: "../envs/default.yaml"
+    output: "build/output/{resolution}/{land}/technology.{plot_suffix}"
+    script: "../src/analyse/technology_plot.py"
+
+
 rule test:
     message: "Run tests"
     input:
