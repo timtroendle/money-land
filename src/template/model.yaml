@@ -8,7 +8,7 @@ import:
     - './import-restrictions.yaml'
 model:
     name: 'Money Land'
-    calliope_version: 0.6.5-dev
+    calliope_version: 0.6.5
     timeseries_data_path: './'
     subset_time: ['2016-01-01', '2016-12-31']
 run:
