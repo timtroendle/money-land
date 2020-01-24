@@ -11,17 +11,19 @@ parameters:
     jrc-biofuel:
         scenario: medium
     land-use:
-        wind_onshore_monopoly: 0.125 # km2/MW, see parameters in euro-calliope/config/defaults.yaml
-        wind_onshore_competing: 0.125 # km2/MW, see parameters in euro-calliope/config/defaults.yaml
+        wind_onshore_monopoly: 0.113 # km2/MW, [@vanZalk:2018]
+        wind_onshore_competing: 0.113 # km2/MW, [@vanZalk:2018]
         wind_offshore: 0 # no onshore areas
         roof_mounted_pv: 0
-        open_field_pv: 0.0125 # km2/MW, see parameters in euro-calliope/config/defaults.yaml
+        open_field_pv: 0.0113 # km2/MW, expected value when assuming efficiency uniform [0.175, 0.22] [@Wirth:2020]
+                              # and module area uniform [40%, 50%] [@Wirth:2017] [@Smil:2015]
     footprint-only:
         wind_onshore_monopoly: 0.0038 # km2/MW, see [@Palmer-Wilson:2019]
         wind_onshore_competing: 0.0038 # km2/MW, see [@Palmer-Wilson:2019]
         wind_offshore: 0 # no onshore areas
         roof_mounted_pv: 0
-        open_field_pv: 0.0125 # km2/MW, see parameters in euro-calliope/config/defaults.yaml
+        open_field_pv: 0.0113 # km2/MW, expected value when assuming efficiency uniform [0.175, 0.22] [@Wirth:2020]
+                              # and module area uniform [40%, 50%] [@Wirth:2017] [@Smil:2015]
 resolution:
     space: continental
     time: 1D

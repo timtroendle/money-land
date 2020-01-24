@@ -6,9 +6,12 @@ import pandas as pd
 import xarray as xr
 from SALib.sample import saltelli
 from SALib.analyze import sobol
-from SALib.util import compute_groups_matrix
+import scipy as sp
+from scipy import stats
+import SALib.util
 
 ALL_TECHS = ["roof", "util", "wind", "offshore"]
+MAX_IRRADIATION = 1000 # Wp / m2
 
 
 @dataclass
@@ -39,9 +42,21 @@ class CostFactors:
 @dataclass
 class LandUseFactors:
     wind_onshore: float
-    wind_offshore: float
-    roof_mounted_pv: float
     open_field_pv: float
+    wind_offshore: float = 0
+    roof_mounted_pv: float = 0
+
+    @classmethod
+    def from_x(cls, x):
+        return LandUseFactors(
+            wind_onshore=x[4],
+            open_field_pv=LandUseFactors.pv_land_use_factor(module_efficiency=x[5], module_share=x[6])
+        )
+
+    @classmethod
+    def pv_land_use_factor(cls, module_efficiency, module_share):
+        installable_watt_per_m2 = MAX_IRRADIATION * module_share * module_efficiency
+        return 1 / installable_watt_per_m2
 
     def apply_to_energy_cap(self, energy_cap):
         factors = xr.zeros_like(energy_cap)
@@ -52,25 +67,34 @@ class LandUseFactors:
         return energy_cap * factors
 
 
-def uncertainty_analysis(path_to_results, land_use_factors, number_uncertainty_runs, path_to_xy, path_to_sobol):
+def uncertainty_analysis(path_to_results, number_uncertainty_runs, path_to_xy, path_to_sobol):
+    monkey_patch_salib()
     problem = { # FIXME inject the problem from config
-        'num_vars': 4,
+        'num_vars': 7,
         'names': ['cost-wind-onshore',
                   'cost-wind-offshore',
                   'cost-roof-mounted-pv',
-                  'cost-open-field-pv'],
+                  'cost-open-field-pv',
+                  'capacity-density-wind-onshore',
+                  'efficiency-open-field-pv',
+                  'module-share-open-field-pv'
+                  ],
         'bounds': [[800 / 1100, 1700 / 1100], # FIXME linear scaling imprecise due to discounting
                    [1790 / 2280, 3270 / 2280],
                    [760 / 880, 1000 / 880],
-                   [280 / 520, 580 / 520]] # TODO link to roof mounted PV?
+                   [280 / 520, 580 / 520], # TODO link to roof mounted PV?
+                   [1 / 8.82, (1 / 8.82) * 1.98 / 8.82],
+                   [0.17, 0.22],
+                   [0.4, 0.5]
+                   ],
+        'dists': ['unif', 'unif', 'unif', 'unif', 'norm', 'unif', 'unif']
     }
-    param_values = saltelli.sample(problem, number_uncertainty_runs)
+    param_values = saltelli.sample(problem, number_uncertainty_runs, calc_second_order=False)
 
     data = xr.open_dataset(path_to_results)
     ys = np.zeros([param_values.shape[0], 10])
     for i, x in enumerate(param_values):
-        ys[i] = evaluate_model(data, land_use_factors, x)
-
+        ys[i] = evaluate_model(data, x)
     (
         pd
         .DataFrame(param_values, columns=problem["names"])
@@ -91,12 +115,13 @@ def uncertainty_analysis(path_to_results, land_use_factors, number_uncertainty_r
 
     with open(path_to_sobol, "w") as f_out:
         for i, y in enumerate(ys.T):
-            indices = sobol.analyze(problem, y)
-            print_indices(indices, problem, True, f_out)
+            indices = sobol.analyze(problem, y, calc_second_order=False)
+            print_indices(indices, problem, False, f_out)
 
 
-def evaluate_model(data, land_use_factors, x):
+def evaluate_model(data, x):
     cost_factors = CostFactors.from_x(x)
+    land_use_factors = LandUseFactors.from_x(x)
     data = read_data(data, land_use_factors, cost_factors)
     optimal_scenario = data.cost[data.cost == data.cost.min()].isel(scenario=0).scenario.item()
     optimal_data = data.sel(scenario=optimal_scenario)
@@ -161,7 +186,7 @@ def print_indices(S, problem, calc_second_order, file):
         D = problem['num_vars']
     else:
         title = 'Group'
-        _, names = compute_groups_matrix(problem['groups'])
+        _, names = SALib.util.compute_groups_matrix(problem['groups'])
         D = len(names)
 
     print('%s S1 S1_conf ST ST_conf' % title, file=file)
@@ -179,15 +204,16 @@ def print_indices(S, problem, calc_second_order, file):
                       S['S2'][j, k], S['S2_conf'][j, k]), file=file)
 
 
+def monkey_patch_salib():
+    # SALib throws an Error when using normal distribution, because scipy.stats isn't
+    # properly imported. I am monkey patching this here.
+    sp.stats = stats
+    SALib.util.sp = sp
+
+
 if __name__ == "__main__":
     uncertainty_analysis(
         path_to_results=snakemake.input.results,
-        land_use_factors=LandUseFactors(
-            wind_onshore=snakemake.params.land_factors["wind_onshore_monopoly"],
-            wind_offshore=snakemake.params.land_factors["wind_offshore"],
-            roof_mounted_pv=snakemake.params.land_factors["roof_mounted_pv"],
-            open_field_pv=snakemake.params.land_factors["open_field_pv"]
-        ),
         number_uncertainty_runs=snakemake.params.runs,
         path_to_xy=snakemake.output.xy,
         path_to_sobol=snakemake.output.sobol
