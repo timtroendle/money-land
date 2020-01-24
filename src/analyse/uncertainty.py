@@ -30,6 +30,14 @@ class CostFactors:
             open_field_pv=x[3]
         )
 
+    @classmethod
+    def validate_problem(cls, problem):
+        # otherwise the from_x classmethod above will silently deliver wrong results
+        assert problem["names"][0] == "cost-wind-onshore"
+        assert problem["names"][1] == "cost-wind-offshore"
+        assert problem["names"][2] == "cost-roof-mounted-pv"
+        assert problem["names"][3] == "cost-open-field-pv"
+
     def apply_to_cost(self, cost):
         factors = xr.ones_like(cost)
         factors.loc[{"techs": ["wind_onshore_competing", "wind_onshore_monopoly"]}] = self.wind_onshore
@@ -54,6 +62,13 @@ class LandUseFactors:
         )
 
     @classmethod
+    def validate_problem(cls, problem):
+        # otherwise the from_x classmethod above will silently deliver wrong results
+        assert problem["names"][4] == "capacity-density-wind-onshore"
+        assert problem["names"][5] == "efficiency-open-field-pv"
+        assert problem["names"][6] == "module-share-open-field-pv"
+
+    @classmethod
     def pv_land_use_factor(cls, module_efficiency, module_share):
         installable_watt_per_m2 = MAX_IRRADIATION * module_share * module_efficiency
         return 1 / installable_watt_per_m2
@@ -67,27 +82,13 @@ class LandUseFactors:
         return energy_cap * factors
 
 
-def uncertainty_analysis(path_to_results, number_uncertainty_runs, path_to_xy, path_to_sobol):
+def uncertainty_analysis(path_to_results, uncertain_parameters, number_uncertainty_runs, path_to_xy, path_to_sobol):
     monkey_patch_salib()
-    problem = { # FIXME inject the problem from config
-        'num_vars': 7,
-        'names': ['cost-wind-onshore',
-                  'cost-wind-offshore',
-                  'cost-roof-mounted-pv',
-                  'cost-open-field-pv',
-                  'capacity-density-wind-onshore',
-                  'efficiency-open-field-pv',
-                  'module-share-open-field-pv'
-                  ],
-        'bounds': [[800 / 1100, 1700 / 1100], # FIXME linear scaling imprecise due to discounting
-                   [1790 / 2280, 3270 / 2280],
-                   [760 / 880, 1000 / 880],
-                   [280 / 520, 580 / 520], # TODO link to roof mounted PV?
-                   [1 / 8.82, (1 / 8.82) * 1.98 / 8.82],
-                   [0.17, 0.22],
-                   [0.4, 0.5]
-                   ],
-        'dists': ['unif', 'unif', 'unif', 'unif', 'norm', 'unif', 'unif']
+    problem = {
+        'num_vars': len(uncertain_parameters.keys()),
+        'names': [param_name for param_name in uncertain_parameters.keys()],
+        'bounds': [(attrs["bound1"], attrs["bound2"]) for attrs in uncertain_parameters.values()],
+        'dists': [param_attributes["distribution"] for param_attributes in uncertain_parameters.values()]
     }
     param_values = saltelli.sample(problem, number_uncertainty_runs, calc_second_order=False)
 
@@ -214,6 +215,7 @@ def monkey_patch_salib():
 if __name__ == "__main__":
     uncertainty_analysis(
         path_to_results=snakemake.input.results,
+        uncertain_parameters=snakemake.params.uncertain_parameters,
         number_uncertainty_runs=snakemake.params.runs,
         path_to_xy=snakemake.output.xy,
         path_to_sobol=snakemake.output.sobol

@@ -68,7 +68,8 @@ rule uncertainty_analysis:
         src = "src/analyse/uncertainty.py",
         results = rules.aggregated_results.output[0]
     params:
-        runs = config["number-uncertainty-runs"]
+        runs = config["number-uncertainty-runs"],
+        uncertain_parameters = config["uncertainty"]["parameters"]
     conda: "../envs/default.yaml"
     output:
         xy = "build/output/{resolution}/{land}/uncertainty-xy.csv",
