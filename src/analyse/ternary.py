@@ -39,7 +39,7 @@ def plot_both_ternary(path_to_data, land_use_factors, path_to_plot):
     plot_datas = read_data(path_to_data, land_use_factors)
     sns.set_context("paper")
     fig = plt.figure(figsize=(8, 8))
-    gs = gridspec.GridSpec(3, 2, width_ratios=[5, 5], height_ratios=[20, 20, 1])
+    gs = gridspec.GridSpec(3, 2, width_ratios=[5, 5], height_ratios=[25, 25, 1])
     ax_1 = fig.add_subplot(gs[0, 0])
     ax_2 = fig.add_subplot(gs[0, 1])
     ax_3 = fig.add_subplot(gs[1, 0])
@@ -53,18 +53,18 @@ def plot_both_ternary(path_to_data, land_use_factors, path_to_plot):
     plot_ternary(plot_datas[3], ax=ax_4, cmap=DIVERGING_PALETTE)
 
     plot_sequential_colorbar(fig, cbar_ax_1, plot_datas[0].norm, cmap=SEQUENTIAL_PALETTE,
-                  label="Cost relative to cost minimal case")
+                             label="Cost relative to cost minimal case")
     plot_diverging_colorbar(fig, cbar_ax_2, plot_datas[1].norm, cmap=DIVERGING_PALETTE,
-                  label="Land use relative to cost minimal case",
-                  land_use_data=plot_datas[1].data)
+                            label="Land use relative to cost minimal case",
+                            land_use_data=plot_datas[1].data)
 
     plt.subplots_adjust(
         left=0.05,
-        bottom=0.05,
+        bottom=0.07,
         right=0.95,
-        top=0.95,
+        top=0.98,
         wspace=0.2,
-        hspace=0.2
+        hspace=0.05
     )
     fig.savefig(path_to_plot, dpi=600)
 
@@ -153,6 +153,7 @@ def plot_ternary(plot_data, ax, cmap):
     tax._redraw_labels()
     ax.annotate(plot_data.panel_name, xy=[-0.08, 0.95], xycoords='axes fraction',
                 fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
+    ax.set_aspect(1)
 
 
 def plot_sequential_colorbar(fig, ax, norm, cmap, label):

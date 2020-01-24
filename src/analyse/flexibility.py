@@ -31,19 +31,11 @@ def flexibility(path_to_results, path_to_plot):
     offshore_plot_datas = read_data(path_to_results, "offshore")
 
     sns.set_context("paper")
-    fig = plt.figure(figsize=(8, 4.5))
-    gs = gridspec.GridSpec(3, 7, width_ratios=[5, 1, 5, 1, 5, 1, 5], height_ratios=[4, 4, 1])
-    roof_axes = [fig.add_subplot(gs[0, x]) for x in [0, 2, 4, 6]]
-    offshore_axes = [fig.add_subplot(gs[1, x]) for x in [0, 2, 4, 6]]
-    cbar_axes = [fig.add_subplot(gs[2, x]) for x in [0, 2, 4, 6]]
-    plt.subplots_adjust(
-        left=0.05,
-        bottom=0.05,
-        right=0.95,
-        top=0.90,
-        wspace=0.0,
-        hspace=0.2
-    )
+    fig = plt.figure(figsize=(8, 4))
+    gs = gridspec.GridSpec(3, 4, width_ratios=[5, 5, 5, 5], height_ratios=[4, 4, 1])
+    roof_axes = [fig.add_subplot(gs[0, x]) for x in [0, 1, 2, 3]]
+    offshore_axes = [fig.add_subplot(gs[1, x]) for x in [0, 1, 2, 3]]
+    cbar_axes = [fig.add_subplot(gs[2, x]) for x in [0, 1, 2, 3]]
 
     for plot_datas, axes, cbar_ax, panel_id in zip(zip(roof_plot_datas, offshore_plot_datas),
                                                    zip(roof_axes, offshore_axes),
@@ -58,6 +50,15 @@ def flexibility(path_to_results, path_to_plot):
         plot_colorbar(fig, cbar_ax, norm, PALETTE)
         axes[0].annotate(panel_id + " - " + plot_datas[0].name, xy=[-0.08, 1.15], xycoords='axes fraction',
                          fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
+
+    plt.subplots_adjust(
+        left=0.02,
+        bottom=0.03,
+        right=0.98,
+        top=0.90,
+        wspace=0.0,
+        hspace=0.2
+    )
 
     fig.savefig(path_to_plot, dpi=600)
 
@@ -84,6 +85,7 @@ def plot_ternary(plot_data, ax, norm):
     tax.left_axis_label(plot_data.left_axis_label, ha="center", offset=0.10)
     tax.clear_matplotlib_ticks()
     tax._redraw_labels()
+    ax.set_aspect(1)
 
 
 def plot_colorbar(fig, ax, norm, cmap):
