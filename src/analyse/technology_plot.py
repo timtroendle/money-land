@@ -153,7 +153,7 @@ def optimal_path(data, tech):
         )
         slopes = slopes[slopes < 0] # don't follow slopes that lead to worse points
         if len(slopes.index) == 0:
-            raise StopIteration()
+            return
         else:
             optimal_index = slopes.abs().idxmin()
             yield optimal_index, slopes.loc[optimal_index]

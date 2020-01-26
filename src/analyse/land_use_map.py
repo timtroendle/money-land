@@ -81,7 +81,7 @@ def read_cost_optimal_land_use(path_to_results, factors):
 def choose_countries(countries, land_area):
     comparison_countries = [COMPARISON_COUNTRIES.pop()]
     comparison_area = countries.loc[comparison_countries].area.sum() / 1e6
-    while not land_area * 0.9 < comparison_area < land_area * 1.1:
+    while not land_area * 0.8 < comparison_area < land_area * 1.2:
         comparison_countries = comparison_countries + [COMPARISON_COUNTRIES.pop()]
         comparison_area = countries.loc[comparison_countries].area.sum() / 1e6
     return comparison_countries

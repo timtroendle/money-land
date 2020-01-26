@@ -110,8 +110,9 @@ def plot_joint(data, ax_joint, ax_marginal_top, ax_marginal_right):
 
 
 def plot_diff(data, ax):
+    diff = data["util"] - data["offshore"]
     sns.distplot(
-        data["util"] - data["offshore"],
+        diff,
         ax=ax,
         kde=True,
         hist=False,
@@ -135,6 +136,14 @@ def plot_diff(data, ax):
         + r"compared to offshore wind $\mathrm{\left(\frac{EUR}{m^2 \cdot yr}\right)} $"
     )
     ax.set_ylabel("Density")
+    ax.annotate(
+        s=f"μ = {diff.mean():.2f}" + r" $ \frac{EUR}{m^2 \cdot yr} $",
+        xy=(diff.mean(), 0),
+        xytext=(1, 0.6),
+        textcoords="axes fraction",
+        ha="right",
+        color=GREY
+    )
 
 
 if __name__ == "__main__":
