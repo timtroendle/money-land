@@ -154,10 +154,10 @@ def r50_cost(data, optimal_data, tech):
     conditions.append(data.land_use <= 0.5 * optimal_data["land_use"])
     mask = functools.reduce(lambda x, y: x & y, conditions)
     if len(data.sel(scenario=mask).scenario) > 0:
-        optimal_data_50 = data.sel(scenario=mask).sortby("cost").isel(scenario=0)
-        delta_cost_eur = optimal_data_50.cost.item() - optimal_data["cost"]
-        delta_land_m2 = (optimal_data_50.land_use.item() - optimal_data["land_use"]) * 1e6
-        return delta_cost_eur / delta_land_m2
+        selected_scenarios = data.sel(scenario=mask)
+        delta_cost = selected_scenarios.cost - optimal_data["cost"]
+        delta_land_m2 = (selected_scenarios.land_use - optimal_data["land_use"]) * 1e6
+        return (delta_cost / delta_land_m2).max().item()
     else:
         return np.nan
 

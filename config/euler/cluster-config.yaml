@@ -16,4 +16,4 @@ aggregated_results:
 test:
     runtime: 30
 uncertainty_analysis:
-    runtime: 60
+    runtime: 120

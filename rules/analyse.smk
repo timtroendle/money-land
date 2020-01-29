@@ -63,7 +63,7 @@ rule aggregated_results:
 
 
 rule uncertainty_analysis:
-    message: "Analysis impact of cost uncertainty."
+    message: "Analyse impact of cost uncertainty."
     input:
         src = "src/analyse/uncertainty.py",
         results = rules.aggregated_results.output[0]
