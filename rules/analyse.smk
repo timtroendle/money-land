@@ -153,6 +153,16 @@ rule uncertainty_plot:
     script: "../src/analyse/uncertainty_plot.py"
 
 
+rule boxenplot_of_uncertainty:
+    message: "Create a boxenplot of uncertainty."
+    input:
+        src = "src/analyse/boxenplot.py",
+        xy = rules.uncertainty_analysis.output[0]
+    conda: "../envs/default.yaml"
+    output: "build/output/{resolution}/{land}/boxenplot.{plot_suffix}"
+    script: "../src/analyse/boxenplot.py"
+
+
 rule test:
     message: "Run tests"
     input:

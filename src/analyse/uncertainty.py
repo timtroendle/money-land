@@ -93,7 +93,7 @@ def uncertainty_analysis(path_to_results, uncertain_parameters, number_uncertain
     param_values = saltelli.sample(problem, number_uncertainty_runs, calc_second_order=False)
 
     data = xr.open_dataset(path_to_results)
-    ys = np.zeros([param_values.shape[0], 10])
+    ys = np.zeros([param_values.shape[0], 14])
     for i, x in enumerate(param_values):
         ys[i] = evaluate_model(data, x)
     (
@@ -106,10 +106,14 @@ def uncertainty_analysis(path_to_results, uncertain_parameters, number_uncertain
             optimal_wind=ys.T[3],
             optimal_roof=ys.T[4],
             optimal_offshore=ys.T[5],
-            r50_cost_util=ys.T[6],
-            r50_cost_offshore=ys.T[7],
-            r50_cost_roof=ys.T[8],
-            r50_cost_wind=ys.T[9]
+            r25_cost_util=ys.T[6],
+            r25_cost_offshore=ys.T[7],
+            r25_cost_roof=ys.T[8],
+            r25_cost_wind=ys.T[9],
+            r50_cost_util=ys.T[10],
+            r50_cost_offshore=ys.T[11],
+            r50_cost_roof=ys.T[12],
+            r50_cost_wind=ys.T[13]
         )
         .to_csv(path_to_xy, index=True, header=True)
     )
@@ -137,21 +141,26 @@ def evaluate_model(data, x):
         optimal_data["wind"],
         optimal_data["roof"],
         optimal_data["offshore"],
-        r50_cost(data, optimal_data, "util"),
-        r50_cost(data, optimal_data, "offshore"),
-        r50_cost(data, optimal_data, "roof"),
-        r50_cost(data, optimal_data, "wind")
+        cost_of_reducing_land_use(data, optimal_data, "util", reduction_level=0.25),
+        cost_of_reducing_land_use(data, optimal_data, "offshore", reduction_level=0.25),
+        cost_of_reducing_land_use(data, optimal_data, "roof", reduction_level=0.25),
+        cost_of_reducing_land_use(data, optimal_data, "wind", reduction_level=0.25),
+        cost_of_reducing_land_use(data, optimal_data, "util", reduction_level=0.5),
+        cost_of_reducing_land_use(data, optimal_data, "offshore", reduction_level=0.5),
+        cost_of_reducing_land_use(data, optimal_data, "roof", reduction_level=0.5),
+        cost_of_reducing_land_use(data, optimal_data, "wind", reduction_level=0.5)
     )
 
 
-def r50_cost(data, optimal_data, tech):
-    """Calculates relative cost of reducing land use by 50% using a single technology."""
+def cost_of_reducing_land_use(data, optimal_data, tech, reduction_level):
+    """Calculates relative cost of reducing land use by given level using a single technology."""
+    assert 0 < reduction_level <= 1
     conditions = [
         data[other_tech] <= optimal_data[other_tech]
         for other_tech in ALL_TECHS
         if other_tech != tech
     ]
-    conditions.append(data.land_use <= 0.5 * optimal_data["land_use"])
+    conditions.append(data.land_use <= (1 - reduction_level) * optimal_data["land_use"])
     mask = functools.reduce(lambda x, y: x & y, conditions)
     if len(data.sel(scenario=mask).scenario) > 0:
         selected_scenarios = data.sel(scenario=mask)
