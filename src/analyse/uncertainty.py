@@ -12,6 +12,7 @@ import SALib.util
 
 ALL_TECHS = ["roof", "util", "wind", "offshore"]
 MAX_IRRADIATION = 1000 # Wp / m2
+TOTAL_EUROPEAN_LAND_MASS_KM2 = 4920000
 
 
 @dataclass
@@ -93,7 +94,7 @@ def uncertainty_analysis(path_to_results, uncertain_parameters, number_uncertain
     param_values = saltelli.sample(problem, number_uncertainty_runs, calc_second_order=False)
 
     data = xr.open_dataset(path_to_results)
-    ys = np.zeros([param_values.shape[0], 14])
+    ys = np.zeros([param_values.shape[0], 30])
     for i, x in enumerate(param_values):
         ys[i] = evaluate_model(data, x)
     (
@@ -109,11 +110,27 @@ def uncertainty_analysis(path_to_results, uncertain_parameters, number_uncertain
             r25_cost_util=ys.T[6],
             r25_cost_offshore=ys.T[7],
             r25_cost_roof=ys.T[8],
-            r25_cost_wind=ys.T[9],
-            r50_cost_util=ys.T[10],
-            r50_cost_offshore=ys.T[11],
-            r50_cost_roof=ys.T[12],
-            r50_cost_wind=ys.T[13]
+            r50_cost_util=ys.T[9],
+            r50_cost_offshore=ys.T[10],
+            r50_cost_roof=ys.T[11],
+            a35_cost_util=ys.T[12],
+            a30_cost_util=ys.T[13],
+            a20_cost_util=ys.T[14],
+            a15_cost_util=ys.T[15],
+            a10_cost_util=ys.T[16],
+            a05_cost_util=ys.T[17],
+            a35_cost_offshore=ys.T[18],
+            a30_cost_offshore=ys.T[19],
+            a20_cost_offshore=ys.T[20],
+            a15_cost_offshore=ys.T[21],
+            a10_cost_offshore=ys.T[22],
+            a05_cost_offshore=ys.T[23],
+            a35_cost_roof=ys.T[24],
+            a30_cost_roof=ys.T[25],
+            a20_cost_roof=ys.T[26],
+            a15_cost_roof=ys.T[27],
+            a10_cost_roof=ys.T[28],
+            a05_cost_roof=ys.T[29]
         )
         .to_csv(path_to_xy, index=True, header=True)
     )
@@ -144,11 +161,27 @@ def evaluate_model(data, x):
         cost_of_reducing_land_use(data, optimal_data, "util", reduction_level=0.25),
         cost_of_reducing_land_use(data, optimal_data, "offshore", reduction_level=0.25),
         cost_of_reducing_land_use(data, optimal_data, "roof", reduction_level=0.25),
-        cost_of_reducing_land_use(data, optimal_data, "wind", reduction_level=0.25),
         cost_of_reducing_land_use(data, optimal_data, "util", reduction_level=0.5),
         cost_of_reducing_land_use(data, optimal_data, "offshore", reduction_level=0.5),
         cost_of_reducing_land_use(data, optimal_data, "roof", reduction_level=0.5),
-        cost_of_reducing_land_use(data, optimal_data, "wind", reduction_level=0.5)
+        cost_of_limiting_land_use(data, optimal_data, "util", relative_threshold=0.035),
+        cost_of_limiting_land_use(data, optimal_data, "util", relative_threshold=0.03),
+        cost_of_limiting_land_use(data, optimal_data, "util", relative_threshold=0.02),
+        cost_of_limiting_land_use(data, optimal_data, "util", relative_threshold=0.015),
+        cost_of_limiting_land_use(data, optimal_data, "util", relative_threshold=0.01),
+        cost_of_limiting_land_use(data, optimal_data, "util", relative_threshold=0.005),
+        cost_of_limiting_land_use(data, optimal_data, "offshore", relative_threshold=0.035),
+        cost_of_limiting_land_use(data, optimal_data, "offshore", relative_threshold=0.03),
+        cost_of_limiting_land_use(data, optimal_data, "offshore", relative_threshold=0.02),
+        cost_of_limiting_land_use(data, optimal_data, "offshore", relative_threshold=0.015),
+        cost_of_limiting_land_use(data, optimal_data, "offshore", relative_threshold=0.01),
+        cost_of_limiting_land_use(data, optimal_data, "offshore", relative_threshold=0.005),
+        cost_of_limiting_land_use(data, optimal_data, "roof", relative_threshold=0.035),
+        cost_of_limiting_land_use(data, optimal_data, "roof", relative_threshold=0.03),
+        cost_of_limiting_land_use(data, optimal_data, "roof", relative_threshold=0.02),
+        cost_of_limiting_land_use(data, optimal_data, "roof", relative_threshold=0.015),
+        cost_of_limiting_land_use(data, optimal_data, "roof", relative_threshold=0.01),
+        cost_of_limiting_land_use(data, optimal_data, "roof", relative_threshold=0.005)
     )
 
 
@@ -169,6 +202,27 @@ def cost_of_reducing_land_use(data, optimal_data, tech, reduction_level):
         return (delta_cost / delta_land_m2).max().item()
     else:
         return np.nan
+
+
+def cost_of_limiting_land_use(data, optimal_data, tech, relative_threshold):
+    assert 0 < relative_threshold <= 0.1
+    absolute_threshold = relative_threshold * TOTAL_EUROPEAN_LAND_MASS_KM2
+    if optimal_data["land_use"] <= absolute_threshold:
+        return 0
+    else:
+        conditions = [
+            data[other_tech] <= optimal_data[other_tech]
+            for other_tech in ALL_TECHS
+            if other_tech != tech
+        ]
+        conditions.append(data.land_use <= absolute_threshold)
+        mask = functools.reduce(lambda x, y: x & y, conditions)
+        if len(data.sel(scenario=mask).scenario) > 0:
+            selected_scenarios = data.sel(scenario=mask)
+            minimal_cost = selected_scenarios.cost.min().item()
+            return (minimal_cost - optimal_data["cost"]) / optimal_data["cost"]
+        else:
+            return np.nan
 
 
 def read_data(data, land_use_factors, cost_factors):

@@ -153,14 +153,24 @@ rule uncertainty_plot:
     script: "../src/analyse/uncertainty_plot.py"
 
 
-rule boxenplot_of_uncertainty:
-    message: "Create a boxenplot of uncertainty."
+rule relative_boxenplot_uncertainty:
+    message: "Create a boxenplot of uncertainty of relative land reduction."
     input:
-        src = "src/analyse/boxenplot.py",
+        src = "src/analyse/boxenplot_relative.py",
         xy = rules.uncertainty_analysis.output[0]
     conda: "../envs/default.yaml"
-    output: "build/output/{resolution}/{land}/boxenplot.{plot_suffix}"
-    script: "../src/analyse/boxenplot.py"
+    output: "build/output/{resolution}/{land}/boxenplot-relative.{plot_suffix}"
+    script: "../src/analyse/boxenplot_relative.py"
+
+
+rule absolute_boxenplot_uncertainty:
+    message: "Create a boxenplot of uncertainty of absolute land reduction."
+    input:
+        src = "src/analyse/boxenplot_absolute.py",
+        xy = rules.uncertainty_analysis.output[0]
+    conda: "../envs/default.yaml"
+    output: "build/output/{resolution}/{land}/boxenplot-absolute.{plot_suffix}"
+    script: "../src/analyse/boxenplot_absolute.py"
 
 
 rule test:
