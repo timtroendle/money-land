@@ -35,8 +35,8 @@ class PlotData:
     right_axis_label: str = "← Onshore wind (%)"
 
 
-def plot_both_ternary(path_to_data, land_use_factors, path_to_plot):
-    plot_datas = read_data(path_to_data, land_use_factors)
+def plot_both_ternary(path_to_data, path_to_plot):
+    plot_datas = read_data(path_to_data)
     sns.set_context("paper")
     fig = plt.figure(figsize=(8, 8))
     gs = gridspec.GridSpec(3, 2, width_ratios=[5, 5], height_ratios=[25, 25, 1])
@@ -69,16 +69,15 @@ def plot_both_ternary(path_to_data, land_use_factors, path_to_plot):
     fig.savefig(path_to_plot, dpi=600)
 
 
-def read_data(path_to_data, land_use_factors):
-    data = xr.open_dataset(path_to_data).sum("locs")
-    data["roof"] = data["roof"] // 10
-    data["util"] = data["util"] // 10
-    data["wind"] = data["wind"] // 10
-    data["offshore"] = data["offshore"] // 10
-    data["land_use"] = data["energy_cap"] * land_use_factors
+def read_data(path_to_data):
+    data = xr.open_dataset(path_to_data)
+    data.coords["roof"] = data.coords["roof"] // 10
+    data.coords["util"] = data.coords["util"] // 10
+    data.coords["wind"] = data.coords["wind"] // 10
+    data.coords["offshore"] = data.coords["offshore"] // 10
     data = (
-        data[["cost", "land_use"]]
-        .sum("techs")
+        data
+        .mean("sample_id")
         .sel(scenario=(data.roof == 0) | (data.offshore == 0))
         .to_dataframe()
         .set_index(["util", "wind", "roof", "offshore"])
@@ -206,6 +205,5 @@ def plot_diverging_colorbar(fig, ax, norm, cmap, label, land_use_data):
 if __name__ == "__main__":
     plot_both_ternary(
         path_to_data=snakemake.input.results,
-        land_use_factors=pd.Series(snakemake.params.land_factors).to_xarray().rename(index="techs"),
         path_to_plot=snakemake.output[0]
     )

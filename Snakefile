@@ -95,9 +95,6 @@ rule supplementary_material:
     input:
         GENERAL_DOCUMENT_DEPENDENCIES,
         "report/supplementary.md",
-        "build/output/{resolution}/report/footprint-only/ternary.svg",
-        "build/output/{resolution}/report/footprint-only/scatter-roof.svg",
-        "build/output/{resolution}/report/footprint-only/scatter-offshore.svg"
     params: options = pandoc_options
     output: "build/output/{resolution}/supplementary.{suffix}"
     conda: "envs/report.yaml"

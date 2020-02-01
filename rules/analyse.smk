@@ -62,13 +62,37 @@ rule aggregated_results:
     script: "../src/analyse/aggregation.py"
 
 
+rule sample_x:
+    message: "Create samples from input uncertainty."
+    input:
+        src = "src/analyse/x.py",
+    params:
+        runs = config["uncertainty"]["number-runs"],
+        uncertain_parameters = config["uncertainty"]["parameters"]
+    conda: "../envs/default.yaml"
+    output:
+        x = "build/output/{resolution}/{land}/x.csv",
+    script: "../src/analyse/x.py"
+
+
+rule xy:
+    message: "Create samples from output uncertainty."
+    input:
+        src  = "src/analyse/y.py",
+        x = rules.sample_x.output[0],
+        model_output = rules.aggregated_results.output[0]
+    conda: "../envs/default.yaml"
+    output: "build/output/{resolution}/{land}/xy.nc"
+    script: "../src/analyse/y.py"
+
+
 rule uncertainty_analysis:
     message: "Analyse impact of cost uncertainty."
     input:
         src = "src/analyse/uncertainty.py",
         results = rules.aggregated_results.output[0]
     params:
-        runs = config["number-uncertainty-runs"],
+        runs = config["uncertainty"]["number-runs"],
         uncertain_parameters = config["uncertainty"]["parameters"]
     conda: "../envs/default.yaml"
     output:
@@ -93,8 +117,7 @@ rule ternary_plots:
     message: "Create ternary plots of results."
     input:
         src = "src/analyse/ternary.py",
-        results = rules.aggregated_results.output[0]
-    params: land_factors = lambda wildcards: config["parameters"][wildcards["land"]]
+        results = rules.xy.output[0]
     conda: "../envs/default.yaml"
     output: "build/output/{resolution}/{land}/ternary.{plot_suffix}"
     script: "../src/analyse/ternary.py"
@@ -136,8 +159,7 @@ rule technology_plot:
     message: "Create plot for single technologies."
     input:
         src = "src/analyse/technology_plot.py",
-        results = rules.aggregated_results.output[0]
-    params: land_factors = lambda wildcards: config["parameters"][wildcards["land"]]
+        results = rules.xy.output[0]
     conda: "../envs/default.yaml"
     output: "build/output/{resolution}/{land}/technology.{plot_suffix}"
     script: "../src/analyse/technology_plot.py"

@@ -16,15 +16,16 @@ parameters:
         wind_offshore: 0 # no onshore areas
         roof_mounted_pv: 0
         open_field_pv: 0.0113 # km2/MW, expected value when assuming efficiency uniform [0.175, 0.22] [@Wirth:2020]
-                              # and module area uniform [40%, 50%] [@Wirth:2017] [@Smil:2015]
+                              # and module area uniform [40%, 50%] [@Turney:2011] [@Wirth:2017] [@Smil:2015]
     footprint-only:
         wind_onshore_monopoly: 0.0038 # km2/MW, see [@Palmer-Wilson:2019]
         wind_onshore_competing: 0.0038 # km2/MW, see [@Palmer-Wilson:2019]
         wind_offshore: 0 # no onshore areas
         roof_mounted_pv: 0
         open_field_pv: 0.0113 # km2/MW, expected value when assuming efficiency uniform [0.175, 0.22] [@Wirth:2020]
-                              # and module area uniform [40%, 50%] [@Wirth:2017] [@Smil:2015]
+                              # and module area uniform [40%, 50%] [@Turney:2011] [@Wirth:2017] [@Smil:2015]
 uncertainty:
+    number-runs: 100
     parameters:
         cost-wind-onshore:
             # om_prod is missing here. but as long capacity factor is close to average capacity factor
@@ -75,11 +76,10 @@ uncertainty:
             distribution: unif
             bound1: 0.4
             bound2: 0.5
-            source: "Refs. @Wirth:2017 @Smil:2015"
+            source: "Refs. @Turney:2011 @Wirth:2017 @Smil:2015"
 resolution:
     space: continental
     time: 1D
-number-uncertainty-runs: 100
 calliope-parameters: # arbitrary many calliope parameters applied as override
     model.subset_time: ['2016-01-01', '2016-12-31']
 year: 2016

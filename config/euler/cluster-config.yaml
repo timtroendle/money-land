@@ -13,6 +13,8 @@ run_national:
     memory: 6000
 aggregated_results:
     runtime: 60
+xy:
+    runtime: 60
 test:
     runtime: 60
 uncertainty_analysis:

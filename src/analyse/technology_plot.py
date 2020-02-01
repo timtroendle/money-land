@@ -25,9 +25,9 @@ class PlotData:
     xlabel: str = "Land use relative to\n cost minimal case"
 
 
-def technology_plot(path_to_results, land_use_factors, path_to_plot):
+def technology_plot(path_to_results, path_to_plot):
     sns.set_context("paper")
-    plot_datas = read_data(path_to_results, land_use_factors)
+    plot_datas = read_data(path_to_results)
     fig = plt.figure(figsize=(8, 3))
     axes = fig.subplots(1, 3, sharey=True, sharex=True)
 
@@ -90,12 +90,11 @@ def technology_plot(path_to_results, land_use_factors, path_to_plot):
     fig.savefig(path_to_plot, dpi=300)
 
 
-def read_data(path_to_data, land_use_factors):
-    data = xr.open_dataset(path_to_data).sum("locs")
-    data["land_use"] = data["energy_cap"] * land_use_factors
+def read_data(path_to_data):
     data = (
-        data[["cost", "land_use"]]
-        .sum("techs")
+        xr
+        .open_dataset(path_to_data)
+        .mean("sample_id")
         .to_dataframe()
         .set_index(["util", "wind", "roof", "offshore"])
     )
@@ -197,6 +196,5 @@ def slope_stats_eur_per_m2(data):
 if __name__ == "__main__":
     technology_plot(
         path_to_results=snakemake.input.results,
-        land_use_factors=pd.Series(snakemake.params.land_factors).to_xarray().rename(index="techs"),
         path_to_plot=snakemake.output[0]
     )
