@@ -178,6 +178,7 @@ rule test:
     input:
         "src/analyse/test_runner.py",
         "tests/test_feasibility.py",
+        "tests/test_supply_shares.py",
         results = ALL_SCENARIOS,
         biofuel_potentials = eurocalliope("build/data/{{resolution}}/biofuel/{scenario}/potential-mwh-per-year.csv".format(
             scenario=config["parameters"]["jrc-biofuel"]["scenario"]

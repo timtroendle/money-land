@@ -9,7 +9,7 @@ def run_test(scenario_results, path_to_biofuel_potentials, scaling_factors, path
     exit_code = pytest.main(
         [
             f"--html={path_to_output}",
-            f"--self-contained-html",
+            f"--self-contained-html"
         ],
         plugins=[_create_config_plugin(
             scenario_results=scenario_results,
@@ -29,6 +29,12 @@ def _create_config_plugin(scenario_results, scaling_factors, path_to_biofuel_pot
         def model(self, request):
             return calliope.read_netcdf(request.param)
 
+        @pytest.fixture(
+            params=calliope.read_netcdf(scenario_results[0]).inputs.locs.values
+        )
+        def location(self, request):
+            return request.param
+
         @pytest.fixture(scope="session")
         def scaling_factors(self):
             return scaling_factors
@@ -44,6 +50,10 @@ def _create_config_plugin(scenario_results, scaling_factors, path_to_biofuel_pot
         @pytest.fixture(scope="session")
         def carrier_con(self, model, scaling_factors):
             return model.get_formatted_array("carrier_con").squeeze("carriers") / scaling_factors["power"]
+
+        @pytest.fixture(scope="session")
+        def energy_cap(self, model, scaling_factors):
+            return model.get_formatted_array("energy_cap") / scaling_factors["power"]
 
         @pytest.fixture(scope="session")
         def cost(self, model, scaling_factors):

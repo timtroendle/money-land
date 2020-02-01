@@ -14,6 +14,6 @@ run_national:
 aggregated_results:
     runtime: 60
 test:
-    runtime: 30
+    runtime: 60
 uncertainty_analysis:
     runtime: 120
