@@ -163,25 +163,7 @@ def evaluate_model(data, x):
         cost_of_reducing_land_use(data, optimal_data, "roof", reduction_level=0.25),
         cost_of_reducing_land_use(data, optimal_data, "util", reduction_level=0.5),
         cost_of_reducing_land_use(data, optimal_data, "offshore", reduction_level=0.5),
-        cost_of_reducing_land_use(data, optimal_data, "roof", reduction_level=0.5),
-        cost_of_limiting_land_use(data, optimal_data, "util", relative_threshold=0.035),
-        cost_of_limiting_land_use(data, optimal_data, "util", relative_threshold=0.03),
-        cost_of_limiting_land_use(data, optimal_data, "util", relative_threshold=0.02),
-        cost_of_limiting_land_use(data, optimal_data, "util", relative_threshold=0.015),
-        cost_of_limiting_land_use(data, optimal_data, "util", relative_threshold=0.01),
-        cost_of_limiting_land_use(data, optimal_data, "util", relative_threshold=0.005),
-        cost_of_limiting_land_use(data, optimal_data, "offshore", relative_threshold=0.035),
-        cost_of_limiting_land_use(data, optimal_data, "offshore", relative_threshold=0.03),
-        cost_of_limiting_land_use(data, optimal_data, "offshore", relative_threshold=0.02),
-        cost_of_limiting_land_use(data, optimal_data, "offshore", relative_threshold=0.015),
-        cost_of_limiting_land_use(data, optimal_data, "offshore", relative_threshold=0.01),
-        cost_of_limiting_land_use(data, optimal_data, "offshore", relative_threshold=0.005),
-        cost_of_limiting_land_use(data, optimal_data, "roof", relative_threshold=0.035),
-        cost_of_limiting_land_use(data, optimal_data, "roof", relative_threshold=0.03),
-        cost_of_limiting_land_use(data, optimal_data, "roof", relative_threshold=0.02),
-        cost_of_limiting_land_use(data, optimal_data, "roof", relative_threshold=0.015),
-        cost_of_limiting_land_use(data, optimal_data, "roof", relative_threshold=0.01),
-        cost_of_limiting_land_use(data, optimal_data, "roof", relative_threshold=0.005)
+        cost_of_reducing_land_use(data, optimal_data, "roof", reduction_level=0.5)
     )
 
 
@@ -202,27 +184,6 @@ def cost_of_reducing_land_use(data, optimal_data, tech, reduction_level):
         return (delta_cost / delta_land_m2).max().item()
     else:
         return np.nan
-
-
-def cost_of_limiting_land_use(data, optimal_data, tech, relative_threshold):
-    assert 0 < relative_threshold <= 0.1
-    absolute_threshold = relative_threshold * TOTAL_EUROPEAN_LAND_MASS_KM2
-    if optimal_data["land_use"] <= absolute_threshold:
-        return 0
-    else:
-        conditions = [
-            data[other_tech] <= optimal_data[other_tech]
-            for other_tech in ALL_TECHS
-            if other_tech != tech
-        ]
-        conditions.append(data.land_use <= absolute_threshold)
-        mask = functools.reduce(lambda x, y: x & y, conditions)
-        if len(data.sel(scenario=mask).scenario) > 0:
-            selected_scenarios = data.sel(scenario=mask)
-            minimal_cost = selected_scenarios.cost.min().item()
-            return (minimal_cost - optimal_data["cost"]) / optimal_data["cost"]
-        else:
-            return np.nan
 
 
 def read_data(data, land_use_factors, cost_factors):

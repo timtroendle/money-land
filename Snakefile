@@ -25,8 +25,6 @@ rule all:
         f"build/output/{config['resolution']['space']}/supplementary.html",
         f"build/logs/{config['resolution']['space']}/test-report.html",
         f"build/output/{config['resolution']['space']}/land-use/technology-stats.csv",
-        f"build/output/{config['resolution']['space']}/land-use/uncertainty-xy.csv",
-        f"build/output/{config['resolution']['space']}/land-use/uncertainty.png",
         f"build/output/{config['resolution']['space']}/land-use/boxenplot-absolute.png",
         f"build/output/{config['resolution']['space']}/land-use/boxenplot-relative.png",
         f"build/output/{config['resolution']['space']}/land-use/technology.png"

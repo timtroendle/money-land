@@ -1,4 +1,7 @@
-import pandas as pd
+import functools
+
+import numpy as np
+import xarray as xr
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -8,32 +11,21 @@ RED = "#A01914"
 BLUE = "#4F6DB8"
 YELLOW = "#FABC3C"
 
+TOTAL_EUROPEAN_LAND_MASS_KM2 = 4920000
+THRESHOLDS = [0.005, 0.01, 0.015, 0.02, 0.03]
+TECHS = ["roof", "util", "offshore"]
+ALL_TECHS = TECHS + ["wind"]
+
 
 def boxenplot(path_to_xy_data, path_to_plot):
-    data = pd.read_csv(path_to_xy_data, index_col=0)
-    clean_data = (
-        data
-        .loc[:, [col for col in data if col.startswith('a')]]
-        .mul(100) # to percent
-        .unstack()
-        .reset_index()
-        .rename(columns={"level_0": "scenario", 0: "cost"})
-    )
-    clean_data = (
-        clean_data
-        .assign(
-            supply_technology=[tech.split("_")[-1] for tech in clean_data.scenario],
-            threshold=[float(tech.split("_")[0][1:]) / 10 for tech in clean_data.scenario])
-        .rename(columns={"threshold": "Land use limit (%)", "supply_technology": "Supply technology"})
-        .replace({"offshore": "Offshore wind", "util": "Utility-scale PV", "roof": "Rooftop PV"})
-    )
+    data = calculate_data(path_to_xy_data)
 
     sns.set_context("paper")
     fig = plt.figure(figsize=(8, 4))
     ax = fig.subplots(1, 1)
 
     sns.boxenplot(
-        data=clean_data,
+        data=data,
         x="Land use limit (%)",
         y="cost",
         hue="Supply technology",
@@ -51,6 +43,39 @@ def boxenplot(path_to_xy_data, path_to_plot):
 
     fig.tight_layout()
     fig.savefig(path_to_plot, dpi=300)
+
+
+def calculate_data(path_to_xy_data):
+    xy = xr.open_dataset(path_to_xy_data)
+    data = (
+        xr
+        .ones_like(xy.cost.sum("scenario"))
+        .expand_dims(tech=TECHS, threshold=THRESHOLDS)
+    ) * np.nan
+
+    cost_optimal_data = xy.isel(scenario=xy.cost.argmin("scenario"))
+
+    for tech in TECHS:
+        conditions = [
+            xy[other_tech] <= cost_optimal_data[other_tech]
+            for other_tech in ALL_TECHS
+            if other_tech != tech
+        ]
+        tech_mask = functools.reduce(lambda x, y: x & y, conditions)
+        for threshold in THRESHOLDS:
+            absolute_threshold = threshold * TOTAL_EUROPEAN_LAND_MASS_KM2
+            mask = tech_mask & (xy.land_use <= absolute_threshold)
+            index_of_new_cost_optimal_scenarios = xy.where(mask).cost.argmin("scenario")
+            cost = xy.isel(scenario=index_of_new_cost_optimal_scenarios).cost
+            data.loc[{"tech": tech, "threshold": threshold}] = (cost - cost_optimal_data.cost) / cost_optimal_data.cost
+    return (
+        data
+        .to_series()
+        .reset_index()
+        .assign(threshold=data.to_series().reset_index().threshold * 100) # to percent
+        .rename(columns={"threshold": "Land use limit (%)", "tech": "Supply technology"})
+        .replace({"offshore": "Offshore wind", "util": "Utility-scale PV", "roof": "Rooftop PV"})
+    )
 
 
 if __name__ == "__main__":

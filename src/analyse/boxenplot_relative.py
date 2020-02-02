@@ -1,4 +1,7 @@
-import pandas as pd
+import functools
+
+import numpy as np
+import xarray as xr
 import seaborn as sns
 import matplotlib.pyplot as plt
 
@@ -9,34 +12,20 @@ BLUE = "#4F6DB8"
 YELLOW = "#FABC3C"
 
 
+REDUCTION_LEVELS = [0.1, 0.25, 0.5]
+TECHS = ["roof", "util", "offshore"]
+ALL_TECHS = TECHS + ["wind"]
+
+
 def boxenplot(path_to_xy_data, path_to_plot):
-    data = pd.read_csv(path_to_xy_data, index_col=0)
-    clean_data = (
-        data[["r25_cost_offshore", "r25_cost_util", "r25_cost_roof",
-              "r50_cost_offshore", "r50_cost_util", "r50_cost_roof"]]
-        .mul(-1)
-        .dropna()
-        .unstack()
-        .reset_index()
-        .rename(columns={"level_0": "scenario", 0: "cost"})
-    )
-    clean_data = (
-        clean_data
-        .assign(
-            supply_technology=[tech.split("_")[-1] for tech in clean_data.scenario],
-            reduction_level=[f'{tech.split("_")[0][1:]} %' for tech in clean_data.scenario])
-        .rename(columns={
-            "reduction_level": "Land reduction from cost-minimal case",
-            "supply_technology": "Supply technology"})
-        .replace({"offshore": "Offshore wind", "util": "Utility-scale PV", "roof": "Rooftop PV"})
-    )
+    data = calculate_data(path_to_xy_data)
 
     sns.set_context("paper")
     fig = plt.figure(figsize=(8, 4))
     ax = fig.add_subplot(111)
 
     sns.boxenplot(
-        data=clean_data,
+        data=data,
         y="Land reduction from cost-minimal case",
         hue="Supply technology",
         x="cost",
@@ -55,6 +44,51 @@ def boxenplot(path_to_xy_data, path_to_plot):
 
     fig.tight_layout()
     fig.savefig(path_to_plot, dpi=300)
+
+
+def calculate_data(path_to_xy_data):
+    xy = xr.open_dataset(path_to_xy_data)
+    data = (
+        xr
+        .ones_like(xy.cost.sum("scenario"))
+        .expand_dims(tech=TECHS, reduction_level=REDUCTION_LEVELS)
+    ) * np.nan
+
+    cost_optimal_data = xy.isel(scenario=xy.cost.argmin("scenario"))
+
+    for tech in TECHS:
+        conditions = [
+            xy[other_tech] <= cost_optimal_data[other_tech]
+            for other_tech in ALL_TECHS
+            if other_tech != tech
+        ]
+        tech_mask = functools.reduce(lambda x, y: x & y, conditions)
+        for reduction_level in REDUCTION_LEVELS:
+            absolute_threshold = (1 - reduction_level) * cost_optimal_data["land_use"]
+            mask = tech_mask & (xy.land_use <= absolute_threshold)
+            delta_cost = xy.where(mask).cost - cost_optimal_data.cost
+            delta_land_m2 = (xy.where(mask).land_use - cost_optimal_data.land_use) * 1e6
+            rel_cost = delta_cost / delta_land_m2
+
+            optimal_index = rel_cost.dropna("sample_id", how="all").argmax("scenario")
+            optimal_cost = (
+                rel_cost
+                .sel(sample_id=optimal_index.sample_id)
+                .isel(scenario=optimal_index)
+                .reindex(sample_id=rel_cost.sample_id)
+            )
+            data.loc[{"tech": tech, "reduction_level": reduction_level}] = optimal_cost
+    return (
+        data
+        .to_series()
+        .mul(-1)
+        .reset_index()
+        .assign(reduction_level=[f'{level * 100:.0f} %' for level in data.to_series().reset_index().reduction_level])
+        .rename(columns={
+            "reduction_level": "Land reduction from cost-minimal case",
+            "tech": "Supply technology"})
+        .replace({"offshore": "Offshore wind", "util": "Utility-scale PV", "roof": "Rooftop PV"})
+    )
 
 
 if __name__ == "__main__":

@@ -86,21 +86,6 @@ rule xy:
     script: "../src/analyse/y.py"
 
 
-rule uncertainty_analysis:
-    message: "Analyse impact of cost uncertainty."
-    input:
-        src = "src/analyse/uncertainty.py",
-        results = rules.aggregated_results.output[0]
-    params:
-        runs = config["uncertainty"]["number-runs"],
-        uncertain_parameters = config["uncertainty"]["parameters"]
-    conda: "../envs/default.yaml"
-    output:
-        xy = "build/output/{resolution}/{land}/uncertainty-xy.csv",
-        sobol = "build/output/{resolution}/{land}/uncertainty-sobol.txt"
-    script: "../src/analyse/uncertainty.py"
-
-
 rule land_use_map:
     message: "Create map depicting land use."
     input:
@@ -165,21 +150,11 @@ rule technology_plot:
     script: "../src/analyse/technology_plot.py"
 
 
-rule uncertainty_plot:
-    message: "Create plot of uncertainty."
-    input:
-        src = "src/analyse/uncertainty_plot.py",
-        xy = rules.uncertainty_analysis.output[0]
-    conda: "../envs/default.yaml"
-    output: "build/output/{resolution}/{land}/uncertainty.{plot_suffix}"
-    script: "../src/analyse/uncertainty_plot.py"
-
-
 rule relative_boxenplot_uncertainty:
     message: "Create a boxenplot of uncertainty of relative land reduction."
     input:
         src = "src/analyse/boxenplot_relative.py",
-        xy = rules.uncertainty_analysis.output[0]
+        xy = rules.xy.output[0]
     conda: "../envs/default.yaml"
     output: "build/output/{resolution}/{land}/boxenplot-relative.{plot_suffix}"
     script: "../src/analyse/boxenplot_relative.py"
@@ -189,7 +164,7 @@ rule absolute_boxenplot_uncertainty:
     message: "Create a boxenplot of uncertainty of absolute land reduction."
     input:
         src = "src/analyse/boxenplot_absolute.py",
-        xy = rules.uncertainty_analysis.output[0]
+        xy = rules.xy.output[0]
     conda: "../envs/default.yaml"
     output: "build/output/{resolution}/{land}/boxenplot-absolute.{plot_suffix}"
     script: "../src/analyse/boxenplot_absolute.py"
