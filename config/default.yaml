@@ -30,7 +30,8 @@ uncertainty:
         cost-wind-onshore:
             # om_prod is missing here. but as long capacity factor is close to average capacity factor
             # of euro-calliope, this is no problem. if it is not, this leads to tiny deviations.
-            descriptive-name: Cost scaling factor of onshore wind.
+            descriptive-name: Cost onshore wind
+            description: Cost scaling factor of onshore wind.
             distribution: unif
             bound1: 0.727272727 # 800 / 1100
             bound2: 1.545454545 # 1700 / 1100
@@ -38,7 +39,8 @@ uncertainty:
         cost-wind-offshore:
             # om_prod is missing here. but as long capacity factor is close to average capacity factor
             # of euro-calliope, this is no problem. if it is not, this leads to tiny deviations.
-            descriptive-name: Cost scaling factor of offshore wind.
+            descriptive-name: Cost offshore wind
+            description: Cost scaling factor of offshore wind.
             distribution: unif
             bound1: 0.785087719 # 1790 / 2280
             bound2: 1.434210526 # 3270 / 2280
@@ -46,7 +48,8 @@ uncertainty:
         cost-roof-mounted-pv:
             # om_prod is missing here. but as long capacity factor is close to average capacity factor
             # of euro-calliope, this is no problem. if it is not, this leads to tiny deviations.
-            descriptive-name: Cost scaling factor for roof-mounted PV.
+            descriptive-name: Cost roof-mounted PV
+            description: Cost scaling factor for roof-mounted PV.
             distribution: unif
             bound1: 0.863636364 # 760 / 880
             bound2: 1.136363636 # 1000 / 880
@@ -54,25 +57,29 @@ uncertainty:
         cost-open-field-pv:
             # om_prod is missing here. but as long capacity factor is close to average capacity factor
             # of euro-calliope, this is no problem. if it is not, this leads to tiny deviations.
-            descriptive-name: Cost scaling factor for utility-scale PV.
+            descriptive-name: Cost utility-scale PV
+            description: Cost scaling factor for utility-scale PV.
             distribution: unif
             bound1: 0.538461538 # 280 / 520
             bound2: 1.115384615 # 580 / 520
             source: "Ref. @JRC:2014 (Table 7)"
         capacity-density-wind-onshore:
-            descriptive-name: Capacity density of onshore wind [m²/W].
+            descriptive-name: Land use wind
+            description: Inverse of onshore wind capacity density [m²/W].
             distribution: norm
             bound1: 0.113378685 # mean, 1 / 8.82
             bound2: 0.025452358 # std (1 / 8.82) * (1.98 / 8.82)
             source: "Ref. @vanZalk:2018"
         efficiency-open-field-pv:
-            descriptive-name: Module efficiency of open field PV.
+            descriptive-name: Efficiency open-field PV
+            description: Module efficiency of open field PV.
             distribution: unif
             bound1: 0.175
             bound2: 0.22
             source: "Ref. @Wirth:2020"
         module-share-open-field-pv:
-            descriptive-name: Share of land that is covered by PV modules.
+            descriptive-name: Land use open-field PV
+            description: Share of land that is covered by PV modules.
             distribution: unif
             bound1: 0.4
             bound2: 0.5

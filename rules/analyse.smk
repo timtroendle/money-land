@@ -170,6 +170,26 @@ rule absolute_boxenplot_uncertainty:
     script: "../src/analyse/boxenplot_absolute.py"
 
 
+rule overview_cost_assumptions:
+    message: "Create table of key cost assumptions."
+    input:
+        src = "src/analyse/cost_assumptions.py",
+        model = "build/output/{resolution}/runs/roof-0-util-0-wind-0-offshore-100.nc"
+    params: scaling_factors = config["scaling-factors"]
+    output: "build/output/{resolution}/overview-cost-assumptions.csv"
+    conda: "../envs/calliope.yaml"
+    script: "../src/analyse/cost_assumptions.py"
+
+
+rule overview_uncertainty_parameters:
+    message: "Create table of uncertainty parameters."
+    input: src = "src/analyse/uncertain_parameters.py"
+    params: parameters = config["uncertainty"]["parameters"]
+    output: "build/output/{resolution}/overview-uncertain-parameters.csv"
+    conda: "../envs/default.yaml"
+    script: "../src/analyse/uncertain_parameters.py"
+
+
 rule test:
     message: "Run tests"
     input:

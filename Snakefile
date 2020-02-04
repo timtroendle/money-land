@@ -72,7 +72,9 @@ rule report:
         "build/output/{resolution}/report/land-use/ternary.svg",
         "build/output/{resolution}/report/land-use/scatter-roof.svg",
         "build/output/{resolution}/report/land-use/scatter-offshore.svg",
-        "build/output/{resolution}/report/flexibility.svg"
+        "build/output/{resolution}/report/flexibility.svg",
+        "build/output/{resolution}/report/overview-cost-assumptions.csv",
+        "build/output/{resolution}/report/overview-uncertain-parameters.csv",
     params: options = pandoc_options
     output: "build/output/{resolution}/report.{suffix}"
     wildcard_constraints:

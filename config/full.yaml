@@ -1,7 +1,7 @@
 resolution:
     space: national
     time: 4H
-number-uncertainty-runs: 10000
+number-uncertainty-runs: 11111 # leading to ~100_000 sample
 calliope-parameters: # arbitrary many calliope parameters applied as override
     model.subset_time: ['2016-01-01', '2016-12-31']
     run.solver_options.OptimalityTol: 1e-3
