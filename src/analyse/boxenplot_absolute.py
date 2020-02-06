@@ -72,7 +72,10 @@ def calculate_data(path_to_xy_data):
         data
         .to_series()
         .reset_index()
-        .assign(threshold=data.to_series().reset_index().threshold * 100) # to percent
+        .assign(
+            threshold=data.to_series().reset_index().threshold * 100, # to percent
+            cost=data.to_series().reset_index().cost * 100 # to percent
+        )
         .rename(columns={"threshold": "Land use limit (%)", "tech": "Supply technology"})
         .replace({"offshore": "Offshore wind", "util": "Utility-scale PV", "roof": "Rooftop PV"})
     )

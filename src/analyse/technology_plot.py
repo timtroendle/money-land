@@ -173,26 +173,6 @@ def average_slope(data, optimal_path):
         return None
 
 
-def slope_stats_eur_per_m2(data):
-    util_slopes = optimal_path_series(data, "util")
-    roof_slopes = optimal_path_series(data, "roof")
-    offshore_slopes = optimal_path_series(data, "offshore")
-    wind_slopes = optimal_path_series(data, "wind")
-    return pd.DataFrame(
-        data={
-            name: [slopes[slopes < 0].max(),
-                   slopes[slopes < 0].min(),
-                   average_slope(data, slopes[slopes < 0]),
-                   slopes.iloc[0]]
-            for name, slopes in [("Utility-scale PV", util_slopes),
-                                 ("Rooftop PV", roof_slopes),
-                                 ("Offshore Wind", offshore_slopes),
-                                 ("Onshore Wind", wind_slopes)]
-        },
-        index=["min", "max", "average", "first"]
-    )
-
-
 if __name__ == "__main__":
     technology_plot(
         path_to_results=snakemake.input.results,

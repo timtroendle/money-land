@@ -22,12 +22,11 @@ rule all:
     message: "Run entire analysis and compile report."
     input:
         f"build/output/{config['resolution']['space']}/report.html",
+        f"build/output/{config['resolution']['space']}/report.pdf",
         f"build/output/{config['resolution']['space']}/supplementary.html",
         f"build/logs/{config['resolution']['space']}/test-report.html",
         f"build/output/{config['resolution']['space']}/land-use/technology-stats.csv",
-        f"build/output/{config['resolution']['space']}/land-use/boxenplot-absolute.png",
-        f"build/output/{config['resolution']['space']}/land-use/boxenplot-relative.png",
-        f"build/output/{config['resolution']['space']}/land-use/technology.png"
+        f"build/output/{config['resolution']['space']}/land-use/boxenplot-relative.png"
 
 
 rule copy_report_file:
@@ -68,8 +67,10 @@ rule report:
         GENERAL_DOCUMENT_DEPENDENCIES,
         "report/report.md",
         "report/pandoc-metadata.yml",
-        "build/output/{resolution}/report/map.png",
+        "build/output/{resolution}/report/land-use/observations.svg",
         "build/output/{resolution}/report/land-use/ternary.svg",
+        "build/output/{resolution}/report/land-use/technology.svg",
+        "build/output/{resolution}/report/land-use/boxenplot-absolute.svg",
         "build/output/{resolution}/report/land-use/scatter-roof.svg",
         "build/output/{resolution}/report/land-use/scatter-offshore.svg",
         "build/output/{resolution}/report/flexibility.svg",

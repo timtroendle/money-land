@@ -86,6 +86,16 @@ rule xy:
     script: "../src/analyse/y.py"
 
 
+rule plot_observations:
+    message: "Create overview plot of all observations."
+    input:
+        src = "src/analyse/observations.py",
+        xy = rules.xy.output[0]
+    conda: "../envs/default.yaml"
+    output: "build/output/{resolution}/{land}/observations.{plot_suffix}"
+    script: "../src/analyse/observations.py"
+
+
 rule land_use_map:
     message: "Create map depicting land use."
     input:

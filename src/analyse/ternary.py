@@ -88,25 +88,25 @@ def read_data(path_to_data):
             data=filter_three_dimensions(data.cost, "roof"),
             left_axis_label="← Rooftop PV (%)",
             norm=matplotlib.colors.Normalize(vmin=data.cost.min(), vmax=data.cost.max()),
-            panel_name="a - Cost without\n     offshore wind"
+            panel_name="a"
         ),
         PlotData(
             data=filter_three_dimensions(data.land_use, "roof"),
             left_axis_label="← Rooftop PV (%)",
             norm=matplotlib.colors.Normalize(vmin=data.land_use.min(), vmax=1 + (1 - data.land_use.min())),
-            panel_name="b - Land use without\n     offshore wind"
+            panel_name="b"
         ),
         PlotData(
             data=filter_three_dimensions(data.cost, "offshore"),
             left_axis_label="← Offshore wind (%)",
             norm=matplotlib.colors.Normalize(vmin=data.cost.min(), vmax=data.cost.max()),
-            panel_name="c - Cost without\n     rooftop PV"
+            panel_name="c"
         ),
         PlotData(
             data=filter_three_dimensions(data.land_use, "offshore"),
             left_axis_label="← Offshore wind (%)",
             norm=matplotlib.colors.Normalize(vmin=data.land_use.min(), vmax=1 + (1 - data.land_use.min())),
-            panel_name="d - Land use without\n     rooftop PV"
+            panel_name="d"
         )
     ]
 
