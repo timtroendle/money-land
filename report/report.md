@@ -146,4 +146,8 @@ The high level perspective on land requirements in this study allows to understa
 
 My findings show that supply technology choice is an effective way to reduce land use of fully renewable electricity systems in Europe. Systems with vastly different land use can be designed, and their cost must not vary much as long as land use is reduced cost-effectively. These findings increase the solution space for a European energy transition and allow to integrate more diverse stakeholder positions than was possible with traditional cost minimised electricity system designs. The different stakeholder positions must, however, not only be considered in the design of future renewable electricity systems: While the measures discussed in this study have a local impact on land use, their impact on cost may not be local -- it may even be global. This aspect should be considered in the design of future electricity markets to achieve socially accepted renewable electricity with just distribution of cost.
 
+# Acknowledgements
+
+The work of T.T. was supported by a European Research Council grant (TRIPOD, grant agreement number 715132).
+
 # References
