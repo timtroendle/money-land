@@ -1,6 +1,6 @@
 # Money Land
 
-Trade-off between land use and cost of renewable electricity in Europe.
+Trade-off between land requirements and cost of renewable electricity in Europe.
 
 This repository contains the entire scientific project, including code and report. The philosophy behind this repository is that no intermediary results are included, but all results are computed from raw data and code.
 

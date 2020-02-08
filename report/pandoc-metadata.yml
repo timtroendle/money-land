@@ -6,14 +6,14 @@ institute: IASS Potsdam
 tags:
     - 'reproducible-research'
 abstract: |
-    Renewable electricity allows to fully decarbonise the European electricity supply. Compared to fossil-fuel or nuclear based electricity generation, renewable electricity requires significantly more land, however. Its land impact can cause conflicts, as it competes with other land uses, ::disturbs ecosystems,:: and it can be seen as an interference in landscape. Using a dynamic model that captures renewable fluctuations, I explore cost-effective ways to reduce land use compared to a cost-minimal case through supply technologies with no or low land use: offshore wind, solar photovoltaics on roofs and solar photovoltaics on open fields. Cost-minimal renewable electricity requires 92,000 km²  (1.9%) of land for solar and wind installations, roughly the size of Portugal. The three technologies provide the potential to reduce land use by 50% and more, with offshore wind being the most cost-effective technology: halving land use using offshore wind only requires a cost penalty of ::8 %::. To save the same amount of land, utility-scale and roof mounted photovoltaics increase expected cost by ::12 and 22 %::. My research shows that renewable electricity supply in Europe is possible and economically viable with largely different land use patterns.
+    Renewable electricity allows to fully decarbonise the European electricity supply. Compared to fossil-fuel or nuclear based electricity generation, renewable electricity requires significantly more land, however. Its land impact can cause conflicts, as it competes with other land uses, impacts ecosystems, and can be seen as an interference in landscape. Using a dynamic model that captures renewable fluctuations, I explore cost-effective ways to reduce land requirements compared to a cost-minimal case through supply technologies with no or low land requirements: offshore wind, solar photovoltaics on roofs and solar photovoltaics on open fields. Cost-minimal renewable electricity requires expected 92,000 km²  (1.9%) of land for solar and wind installations, roughly the size of Portugal. The three technologies provide the potential to reduce land requirements by 50% and more, with offshore wind being the most cost-effective technology: limiting available land area to 0.5% requires an expected cost penalty of only 12%. To reach similar low land requirements, open field and rooftop photovoltaics require an expected cost penalty of 21 and 32%. My research shows that renewable electricity supply in Europe is possible and economically viable with largely different land use patterns —  a finding that allows to integrate more diverse stakeholder positions into the energy transition than before.
 highlights:
     - Cost-minimal renewable electricity in Europe requires expected 92,000 km^2^ (1.9%) land for solar and wind.
-    - Systems with vastly different land use can be designed for small cost penalities.
-    - Land use can be limited to 49,000 km^2^ (1%) with an expected cost penalty of 10%.
-    - Offshore wind requires lowest expected cost pentalty to reduce land use 0.36 EUR / m^2^ / yr.
-    - Utility-scale PV is most cost-effective for small land reduction.
-    - Rooftop PV is least cost-effective option to reduce land.
+    - Systems with vastly different land requirements can be designed for small cost penalities.
+    - Land requirements can be limited to 25,000 km^2^ (0.5%) with an expected cost penalty of 12%.
+    - "Offshore wind requires lowest expected cost pentalty to reduce impacted land area: 0.36 EUR / m^2^ / yr."
+    - Utility-scale PV is most cost-effective for small land area reductions.
+    - Rooftop PV is the least cost-effective option to reduce land requirements.
 bibliography:
     - 'literature.bib'
 csl: 'plos-one.csl'

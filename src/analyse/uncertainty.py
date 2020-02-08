@@ -168,7 +168,7 @@ def evaluate_model(data, x):
 
 
 def cost_of_reducing_land_use(data, optimal_data, tech, reduction_level):
-    """Calculates relative cost of reducing land use by given level using a single technology."""
+    """Calculates relative cost of reducing land requirements by given level using a single technology."""
     assert 0 < reduction_level <= 1
     conditions = [
         data[other_tech] <= optimal_data[other_tech]

@@ -97,7 +97,7 @@ rule plot_observations:
 
 
 rule land_use_map:
-    message: "Create map depicting land use."
+    message: "Create map depicting land requirements."
     input:
         src = "src/analyse/land_use_map.py",
         results = rules.aggregated_results.output[0],

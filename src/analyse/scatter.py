@@ -117,7 +117,7 @@ def scatter(path_to_results, case, land_definition, land_use_factors, path_to_pl
                 if isinstance(child, matplotlib.collections.PathCollection)][0]
     scatters.set_label("Observations")
     ax_main.legend()
-    ax_main.set_xlabel("Land use relative to cost minimal case")
+    ax_main.set_xlabel("Land requirements relative to cost minimal case")
     ax_main.set_ylabel("Cost relative to cost minimal case")
     ax_main.annotate('a', xy=[-0.08, 1.05], xycoords='axes fraction',
                      fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
@@ -178,7 +178,7 @@ def scatter(path_to_results, case, land_definition, land_use_factors, path_to_pl
     ax_wind.set_ylabel("")
     for tick in ax_wind.yaxis.get_major_ticks():
         tick.set_visible(False)
-    ax_wind.set_xlabel("Land use relative to cost minimal case")
+    ax_wind.set_xlabel("Land requirements relative to cost minimal case")
 
     sns.despine()
     fig.tight_layout()

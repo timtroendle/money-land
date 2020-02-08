@@ -55,7 +55,7 @@ def plot_both_ternary(path_to_data, path_to_plot):
     plot_sequential_colorbar(fig, cbar_ax_1, plot_datas[0].norm, cmap=SEQUENTIAL_PALETTE,
                              label="Cost relative to cost minimal case")
     plot_diverging_colorbar(fig, cbar_ax_2, plot_datas[1].norm, cmap=DIVERGING_PALETTE,
-                            label="Land use relative to cost minimal case",
+                            label="Land requirements relative to cost minimal case",
                             land_use_data=plot_datas[1].data)
 
     plt.subplots_adjust(

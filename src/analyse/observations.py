@@ -42,7 +42,7 @@ def plot_observations(path_to_xy, path_to_plot):
         color=BLUE,
         ax=ax_land_use
     )
-    ax_land_use.set_xlabel("Land use (% total)")
+    ax_land_use.set_xlabel("Land requirements (% total land)")
 
     ax_land_use.annotate("b", xy=[-0.08, 1.05], xycoords='axes fraction',
                          fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)

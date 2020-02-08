@@ -22,7 +22,7 @@ class PlotData:
     optimal_path: pd.Series
     average_slope: float
     ylabel: str = "Cost relative to\n cost minimal case"
-    xlabel: str = "Land use relative to\n cost minimal case"
+    xlabel: str = "Land requirements relative\nto cost minimal case"
 
 
 def technology_plot(path_to_results, path_to_plot):
