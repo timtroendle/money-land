@@ -1,10 +1,16 @@
 ---
-title: Money Land
+title: Supply-side options to reduce land requirements of fully renewable electricity in Europe
 author:
     - Tim Tröndle
 institute: IASS Potsdam
 tags:
-    - 'reproducible-research'
+    - 'land use'
+    - 'conflict'
+    - 'footprint'
+    - 'energy'
+    - 'decarbonisation'
+    - 'infrastructure'
+    - 'acceptance'
 abstract: |
     Renewable electricity allows to fully decarbonise the European electricity supply. Compared to fossil-fuel or nuclear based electricity generation, renewable electricity requires significantly more land, however. Its land impact can cause conflicts, as it competes with other land uses, impacts ecosystems, and can be seen as an interference in landscape. Using a dynamic model that captures renewable fluctuations, I explore cost-effective ways to reduce land requirements compared to a cost-minimal case through supply technologies with no or low land requirements: offshore wind, solar photovoltaics on roofs and solar photovoltaics on open fields. Cost-minimal renewable electricity requires expected 92,000 km²  (1.9%) of land for solar and wind installations, roughly the size of Portugal. The three technologies provide the potential to reduce land requirements by 50% and more, with offshore wind being the most cost-effective technology: limiting available land area to 0.5% requires an expected cost penalty of only 12%. To reach similar low land requirements, open field and rooftop photovoltaics require an expected cost penalty of 21 and 32%. My research shows that renewable electricity supply in Europe is possible and economically viable with largely different land use patterns —  a finding that allows to integrate more diverse stakeholder positions into the energy transition than before.
 highlights:
