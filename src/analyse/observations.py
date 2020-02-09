@@ -17,7 +17,7 @@ TOTAL_DEMAND_KWH = 3_180_000_000_000 # FIXME inject
 
 
 def plot_observations(path_to_xy, path_to_plot):
-    df = xr.open_dataset(path_to_xy).to_dataframe()
+    ds = xr.open_dataset(path_to_xy)
 
     sns.set_context("paper")
     fig = plt.figure(figsize=(8, 3))
@@ -26,7 +26,7 @@ def plot_observations(path_to_xy, path_to_plot):
     ax_land_use = fig.add_subplot(gs[0, 1], sharey=ax_cost)
 
     sns.distplot(
-        df.cost / TOTAL_DEMAND_KWH,
+        ds.cost.to_series() / TOTAL_DEMAND_KWH,
         kde=False,
         color=RED,
         ax=ax_cost
@@ -36,8 +36,11 @@ def plot_observations(path_to_xy, path_to_plot):
     ax_cost.annotate("a", xy=[-0.08, 1.05], xycoords='axes fraction',
                      fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
 
+    land_use = ds.land_use / TOTAL_EUROPEAN_LAND_MASS_KM2 * 100
+    land_use = land_use.where(land_use < 5, drop=True) # drop upper 0.1%
+    assert land_use.count() / ds.land_use.count() > 0.999
     sns.distplot(
-        df.land_use / TOTAL_EUROPEAN_LAND_MASS_KM2 * 100,
+        land_use.to_series(),
         kde=False,
         color=BLUE,
         ax=ax_land_use

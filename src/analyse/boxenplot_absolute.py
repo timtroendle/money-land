@@ -65,9 +65,13 @@ def calculate_data(path_to_xy_data):
         for threshold in THRESHOLDS:
             absolute_threshold = threshold * TOTAL_EUROPEAN_LAND_MASS_KM2
             mask = tech_mask & (xy.land_use <= absolute_threshold)
-            index_of_new_cost_optimal_scenarios = xy.where(mask).cost.argmin("scenario")
-            cost = xy.isel(scenario=index_of_new_cost_optimal_scenarios).cost
+            cost = xy.where(mask).cost.min("scenario")
             data.loc[{"tech": tech, "threshold": threshold}] = (cost - cost_optimal_data.cost) / cost_optimal_data.cost
+    missing_values = data.isnull()
+    assert not missing_values.sel(tech="roof").any()
+    assert not missing_values.sel(tech="util").any()
+    assert missing_values.sel(tech="offshore", threshold=0.01).sum() < 20 # in rare cases, 1% can not be done
+    assert missing_values.sel(tech="offshore", threshold=0.005).sum() < 1000 # in 1% of cases, 0.05% can not be done
     return (
         data
         .to_series()

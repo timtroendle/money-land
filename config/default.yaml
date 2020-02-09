@@ -65,10 +65,10 @@ uncertainty:
             source: "Ref. @JRC:2014 (Table 7)"
         capacity-density-wind-onshore:
             descriptive-name: Land requirements wind
-            description: Inverse of onshore wind capacity density [m²/W].
+            description: Onshore wind capacity density [W/m²].
             distribution: norm
-            bound1: 0.113378685 # mean, 1 / 8.82
-            bound2: 0.025452358 # std (1 / 8.82) * (1.98 / 8.82)
+            bound1: 8.82 # mean
+            bound2: 1.98 # std
             source: "Ref. @vanZalk:2018"
         efficiency-open-field-pv:
             descriptive-name: Efficiency utility-scale PV

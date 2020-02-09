@@ -50,7 +50,7 @@ class LandUseFactors:
     @classmethod
     def from_x(cls, x):
         return LandUseFactors(
-            wind_onshore=x[4],
+            wind_onshore=1 / x[4],
             open_field_pv=LandUseFactors.pv_land_use_factor(module_efficiency=x[5], module_share=x[6])
         )
 
