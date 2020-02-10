@@ -20,64 +20,49 @@ ALL_TECHS = TECHS + ["wind"]
 
 
 def plot_wind_share(path_to_xy, path_to_plot):
-    # monkey patch seaborn
+    # monkey patch seaborn to allow smaller rhombs in boxenplot
     sns.categorical._LVPlotter._lvplot = _lvplot
-    sns.categorical._LVPlotter._width_functions = _width_functions
 
-    data = calculate_data(path_to_xy)
+    xy = (
+        xr
+        .open_dataset(path_to_xy)
+        .reset_coords(["util", "wind", "roof", "offshore"])
+    )
+    data = (
+        xy
+        .where((xy.roof == 0) & (xy.offshore == 0) & (xy.wind <= 50), drop=True)
+        .to_dataframe()
+    )
+    data = (
+        data
+        .assign(
+            land_use=data.land_use.div(TOTAL_EUROPEAN_LAND_MASS_KM2).mul(100),
+            share=[f"{row[1].wind:.0f}/{row[1].util:.0f}" for row in data.iterrows()]
+        )
+    )
+
     sns.set_context("paper")
     fig = plt.figure(figsize=(8, 4))
     ax = fig.subplots(1, 1)
 
     sns.boxenplot(
         data=data,
-        y="Max capacity share onshore wind (%)",
-        x="Land area limit (%)",
+        y="land_use",
+        x="share",
         color=BLUE,
-        outlier_prop=0.01,
+        k_depth="proportion",
+        outlier_prop=0.1,
         scale="area",
-        width=0.7,
+        s=1.0,
         ax=ax
     )
+    ax.set_ylim(0, 5)
+    ax.set_ylabel("Land requirements (% of total)")
+    ax.set_xlabel("Capacity share (%) of onshore wind / utility-scale PV")
 
     sns.despine()
     fig.tight_layout()
     fig.savefig(path_to_plot, dpi=300)
-
-
-def calculate_data(path_to_xy_data):
-    xy = xr.open_dataset(path_to_xy_data).reset_coords(["util", "wind", "roof", "offshore"])
-    data = (
-        xr
-        .ones_like(xy.cost.sum("scenario"))
-        .rename("share")
-        .expand_dims(threshold=THRESHOLDS)
-    ) * np.nan
-
-    for threshold in THRESHOLDS:
-        absolute_threshold = threshold * TOTAL_EUROPEAN_LAND_MASS_KM2
-        mask = xy.land_use <= absolute_threshold
-        data.loc[{"threshold": threshold}] = xy.where(mask)["wind"].max("scenario")
-
-    return (
-        data
-        .to_series()
-        .reset_index()
-        .assign(
-            threshold=data.to_series().reset_index().threshold * 100, # to percent
-        )
-        .rename(columns={"threshold": "Land area limit (%)", "share": "Max capacity share onshore wind (%)"})
-    )
-
-
-def _width_functions(self, width_func):
-    # taken from mwaskom/seaborn, BSD-3 licensed
-    # 2020-02-10: adapted to cover cases in which box height and width is 0
-    # Dictionary of functions for computing the width of the boxes
-    width_functions = {'linear': lambda h, i, k: (i + 1.) / k,
-                       'exponential': lambda h, i, k: 2**(-k+i-1),
-                       'area': lambda h, i, k: (1 - 2**(-k+i-2)) / h if h > 0 else 0}
-    return width_functions[width_func]
 
 
 def _lvplot(self, box_data, positions,
@@ -129,10 +114,7 @@ def _lvplot(self, box_data, positions,
         # Scale the width of the boxes so the biggest starts at 1
         w_area = np.array([width(height(b), i, k)
                            for i, b in enumerate(box_ends)])
-        # CATCH CASES WHERE BOX AREA IS ZERO
-        if np.max(w_area) > 0:
-            w_area = w_area / np.max(w_area)
-
+        w_area = w_area / np.max(w_area)
 
         # Calculate the medians
         y = np.median(box_data)
@@ -147,7 +129,7 @@ def _lvplot(self, box_data, positions,
 
             # Plot the medians
             ax.plot([x - widths / 2, x + widths / 2], [y, y],
-                    c='.15', alpha=.45, **kws)
+                    c='.15', alpha=.45)
 
             ax.scatter(np.repeat(x, len(outliers)), outliers,
                        marker='d', c=hex_color, **kws)
