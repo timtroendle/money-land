@@ -8,7 +8,7 @@ bibliography:
     - 'literature.bib'
 csl: plos-one.csl
 link-citations: True
-date: draft-02
+date: draft-03-dev
 ---
 
 This document contains supplemental information for:
