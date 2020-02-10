@@ -180,6 +180,16 @@ rule absolute_boxenplot_uncertainty:
     script: "../src/analyse/boxenplot_absolute.py"
 
 
+rule wind_share_plot:
+    message: "Create plot of max wind share."
+    input:
+        src = "src/analyse/wind.py",
+        xy = rules.xy.output[0]
+    conda: "../envs/default.yaml"
+    output: "build/output/{resolution}/{land}/wind.{plot_suffix}"
+    script: "../src/analyse/wind.py"
+
+
 rule overview_cost_assumptions:
     message: "Create table of key cost assumptions."
     input:
