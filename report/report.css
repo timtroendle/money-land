@@ -191,7 +191,9 @@ form, legend, label {
 
 caption, figcaption {
     font-size: small;
-    line-height: 18px
+    line-height: 18px;
+    page-break-before: avoid;
+    page-break-inside: avoid;
 }
 
 caption span, figcaption span {
@@ -265,5 +267,7 @@ table tbody tr:nth-child(odd) th, table tbody tr:nth-child(odd) td {
 
 table caption {
     top: 5px;
-    margin-bottom: 18px
+    margin-bottom: 18px;
+    page-break-after: avoid;
+    page-break-inside: avoid;
 }
