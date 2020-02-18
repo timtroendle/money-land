@@ -23,6 +23,7 @@ highlights:
 bibliography:
     - 'literature.bib'
 csl: 'plos-one.csl'
+css: report.css
 link-citations: True
 lang: en-GB
 date: draft-03-dev

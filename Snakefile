@@ -51,9 +51,9 @@ GENERAL_DOCUMENT_DEPENDENCIES = [
 def pandoc_options(wildcards):
     suffix = wildcards["suffix"]
     if suffix == "html":
-        return "--self-contained --css=report.css --template template.html --to html5"
+        return "--self-contained --template template.html --to html5"
     elif suffix == "pdf":
-        return "--css=report.css --template template.html --pdf-engine weasyprint"
+        return "--template template.html --pdf-engine weasyprint"
     elif suffix == "docx":
         return []
     else:
