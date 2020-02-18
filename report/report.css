@@ -1,33 +1,33 @@
 @font-face {
-    font-family: 'KlinicSlabBook';
+    font-family: 'KlinicSlabFont'; /* Name must not match local font, see weasyprint #1028. */
     font-style: normal;
     font-weight: normal;
-    src: url(fonts/KlinicSlabBook.otf);
+    src: url(fonts/KlinicSlabBook.otf) format("opentype");
 }
 @font-face {
-    font-family: 'KlinicSlabBook';
+    font-family: 'KlinicSlabFont';
     font-style: italic;
     font-weight: normal;
-    src: url(fonts/KlinicSlabBookIt.otf);
+    src: url(fonts/KlinicSlabBookIt.otf) format("opentype");
 }
 @font-face {
-    font-family: 'KlinicSlabBook';
+    font-family: 'KlinicSlabFont';
     font-style: normal;
     font-weight: bold;
-    src: url(fonts/KlinicSlabMedium.otf);
+    src: url(fonts/KlinicSlabMedium.otf) format("opentype");
 }
 @font-face {
-    font-family: 'KlinicSlabMedium';
-    font-style: normal;
+    font-family: 'KlinicSlabFont';
+    font-style: italic;
     font-weight: bold;
-    src: url(fonts/KlinicSlabMedium.otf);
+    src: url(fonts/KlinicSlabMediumIt.otf) format("opentype");
 }
 
 @page {
     size: A4;
     background-color: #ffffff;
     @bottom-center {
-        font-family: KlinicSlabBook, serif;
+        font-family: KlinicSlabFont, serif;
         font-size: 1em;
         content: counter(page);
       }
@@ -48,7 +48,7 @@ body {
     max-width: 700px;
     background: #ffffff;
     color: rgba(0, 0, 0, 0.9);
-    font-family: KlinicSlabBook, serif;
+    font-family: KlinicSlabFont, serif;
     padding: 10px 20px;
     display: block;
     -webkit-font-smoothing: antialiased;
@@ -56,7 +56,7 @@ body {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    font-family: KlinicSlabMedium, serif
+    font-weight: bold;
 }
 
 h1.title {
@@ -208,7 +208,7 @@ blockquote {
     border-right: none;
     border-left: none;
     color: rgba(0, 0, 0, 0.7);
-    font-family: KlinicSlabMedium, serif;
+    font-weight: bold;
     line-height: 25px;
     margin-top: 25px
 }
