@@ -26,5 +26,8 @@ csl: 'plos-one.csl'
 css: report.css
 link-citations: True
 lang: en-GB
+xnos-cleveref: True
+fignos-plus-name: "Fig.\ "
+tablenos-plus-name: "Table\ "
 date: draft-03-dev
 ---
