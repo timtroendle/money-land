@@ -62,6 +62,16 @@ rule aggregated_results:
     script: "../src/analyse/aggregation.py"
 
 
+rule visualise_supply_shares:
+    message: "Visualise supply share space."
+    input:
+        src = "src/analyse/supply_shares.py",
+        results = rules.aggregated_results.output[0]
+    output: "build/output/{resolution}/supply-shares.{plot_suffix}"
+    conda: "../envs/default.yaml"
+    script: "../src/analyse/supply_shares.py"
+
+
 rule sample_x:
     message: "Create samples from input uncertainty."
     input:

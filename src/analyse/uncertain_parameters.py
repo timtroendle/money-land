@@ -1,12 +1,17 @@
 import pandas as pd
 
+DISTRIBUTION_MAP = {
+    "unif": "uniform",
+    "norm": "normal"
+}
+
 
 def uncertainty_parameters_overview(parameters, path_to_output):
     pd.DataFrame(
         data={
             "Name": [p["descriptive-name"] for p in parameters.values()],
             "Description": [p["description"] for p in parameters.values()],
-            "Distribution": [p["distribution"] for p in parameters.values()],
+            "Distribution": [DISTRIBUTION_MAP[p["distribution"]] for p in parameters.values()],
             "Min/Mean": [p["bound1"] for p in parameters.values()],
             "Max/Std": [p["bound2"] for p in parameters.values()],
             "Source": [p["source"] for p in parameters.values()],

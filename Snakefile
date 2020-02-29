@@ -65,6 +65,7 @@ rule report:
         GENERAL_DOCUMENT_DEPENDENCIES,
         "report/report.md",
         "report/pandoc-metadata.yml",
+        "build/output/{resolution}/report/supply-shares.png",
         "build/output/{resolution}/report/land-use/observations.svg",
         "build/output/{resolution}/report/land-use/ternary.svg",
         "build/output/{resolution}/report/land-use/technology.svg",
