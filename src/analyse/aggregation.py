@@ -1,6 +1,5 @@
 """Collect time aggregated results."""
 from dataclasses import dataclass
-from pathlib import Path
 
 import calliope
 import pandas as pd

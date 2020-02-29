@@ -96,18 +96,6 @@ rule plot_observations:
     script: "../src/analyse/observations.py"
 
 
-rule land_use_map:
-    message: "Create map depicting land requirements."
-    input:
-        src = "src/analyse/land_use_map.py",
-        results = rules.aggregated_results.output[0],
-        shapes = eurocalliope("build/data/national/units.geojson"),
-    params: land_factors = config["parameters"]["land-use"]
-    conda: "../envs/default.yaml"
-    output: "build/output/{resolution}/map.png"
-    script: "../src/analyse/land_use_map.py"
-
-
 rule ternary_plots:
     message: "Create ternary plots of results."
     input:
@@ -137,17 +125,6 @@ rule flexibility_plot:
     conda: "../envs/default.yaml"
     output: "build/output/{resolution}/flexibility.{plot_suffix}"
     script: "../src/analyse/flexibility.py"
-
-
-rule technology_stats:
-    message: "Create stats for single technologies."
-    input:
-        src = "src/analyse/technology.py",
-        results = rules.aggregated_results.output[0]
-    params: land_factors = lambda wildcards: config["parameters"][wildcards["land"]]
-    conda: "../envs/default.yaml"
-    output: "build/output/{resolution}/{land}/technology-stats.csv"
-    script: "../src/analyse/technology.py"
 
 
 rule technology_plot:

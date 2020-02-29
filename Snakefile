@@ -24,7 +24,6 @@ rule all:
         f"build/output/{config['resolution']['space']}/report.html",
         f"build/output/{config['resolution']['space']}/report.pdf",
         f"build/logs/{config['resolution']['space']}/test-report.html",
-        f"build/output/{config['resolution']['space']}/land-use/technology-stats.csv",
         f"build/output/{config['resolution']['space']}/land-use/boxenplot-relative.png"
 
 
