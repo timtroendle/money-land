@@ -10,7 +10,7 @@ M_TO_1000KM = 1e-6
 EPSILON = 1e-12
 TECHS = {
     "open_field_pv": "Utility-scale PV",
-    "roof_mounted_pv": "Rooftop PV",
+    "roof_mounted_pv_n": "Rooftop PV",
     "wind_onshore_monopoly": "Onshore wind",
     "wind_offshore": "Offshore wind",
     "biofuel": "Biofuel",
@@ -23,7 +23,7 @@ TECHS = {
 }
 COST_SOURCES = {
     "open_field_pv": "Ref. @JRC:2014 Table 7",
-    "roof_mounted_pv": "Ref. @JRC:2014 Table 9",
+    "roof_mounted_pv_n": "Ref. @JRC:2014 Table 9",
     "wind_onshore_monopoly": "Ref. @JRC:2014 Table 4",
     "wind_offshore": "Ref. @JRC:2014 Table 5",
     "biofuel": "Ref. @JRC:2014 Table 48, ref. @RuizCastello:2015",

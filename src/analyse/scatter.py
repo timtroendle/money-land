@@ -194,7 +194,7 @@ def read_data(path_to_data, case, land_definition, land_use_factors):
         .energy_cap
         .sum("locs")
         .sel(techs=["wind_onshore_monopoly", "wind_onshore_competing", "wind_offshore",
-                    "roof_mounted_pv", "open_field_pv"])
+                    "roof_mounted_pv_n", "roof_mounted_pv_e_w", "roof_mounted_pv_s_flat", "open_field_pv"])
     ) * land_use_factors).sum("techs").to_series()
     land_use_data = (land_use_data / land_use_data[cost_data[cost_data == cost_data.min()].index].values[0])
 

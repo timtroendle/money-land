@@ -35,7 +35,9 @@ class CostFactors:
         factors = xr.ones_like(cost)
         factors.loc[{"techs": ["wind_onshore_competing", "wind_onshore_monopoly"]}] = self.wind_onshore
         factors.loc[{"techs": "wind_offshore"}] = self.wind_offshore
-        factors.loc[{"techs": "roof_mounted_pv"}] = self.roof_mounted_pv
+        factors.loc[{"techs": ["roof_mounted_pv_n",
+                               "roof_mounted_pv_e_w",
+                               "roof_mounted_pv_s_flat"]}] = self.roof_mounted_pv
         factors.loc[{"techs": "open_field_pv"}] = self.open_field_pv
         return cost * factors
 
@@ -70,7 +72,9 @@ class LandUseFactors:
         factors = xr.zeros_like(energy_cap)
         factors.loc[{"techs": ["wind_onshore_competing", "wind_onshore_monopoly"]}] = self.wind_onshore
         factors.loc[{"techs": "wind_offshore"}] = self.wind_offshore
-        factors.loc[{"techs": "roof_mounted_pv"}] = self.roof_mounted_pv
+        factors.loc[{"techs": ["roof_mounted_pv_n",
+                               "roof_mounted_pv_e_w",
+                               "roof_mounted_pv_s_flat"]}] = self.roof_mounted_pv
         factors.loc[{"techs": "open_field_pv"}] = self.open_field_pv
         return energy_cap * factors
 

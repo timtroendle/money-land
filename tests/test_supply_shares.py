@@ -1,14 +1,14 @@
 import pytest
 
 
-EPSILON = 0.011 # 1.1% percent deviation is fine
-ROOFTOP_TECH_NAME = "roof_mounted_pv"
+EPSILON = 0.02 # 2% percent deviation is fine
+ROOFTOP_TECHS = ["roof_mounted_pv_n", "roof_mounted_pv_e_w", "roof_mounted_pv_s_flat"]
 UTILITY_TECH_NAME = "open_field_pv"
 WIND_TECH_NAME1 = "wind_onshore_monopoly"
 WIND_TECH_NAME2 = "wind_onshore_competing"
 OFFSHORE_TECH_NAME = "wind_offshore"
 WIND_TECHS = [WIND_TECH_NAME1, WIND_TECH_NAME2]
-ALL_SUPPLY_TECHS = WIND_TECHS + [OFFSHORE_TECH_NAME, ROOFTOP_TECH_NAME, UTILITY_TECH_NAME]
+ALL_SUPPLY_TECHS = WIND_TECHS + ROOFTOP_TECHS + [OFFSHORE_TECH_NAME, UTILITY_TECH_NAME]
 COUNTRIES_WITHOUT_SHORE = [ # FIXME should come from config
     "AUT",
     "BIH",
@@ -44,7 +44,7 @@ def offshore_share(model):
 
 
 def test_roof_share(roof_share, energy_cap, location):
-    roof_cap = energy_cap.sel(techs=ROOFTOP_TECH_NAME, locs=location).item()
+    roof_cap = energy_cap.sel(techs=ROOFTOP_TECHS, locs=location).sum("techs").item()
     all_cap = energy_cap.sel(techs=ALL_SUPPLY_TECHS, locs=location).sum("techs").item()
     assert roof_cap / all_cap == pytest.approx(roof_share, abs=EPSILON)
 

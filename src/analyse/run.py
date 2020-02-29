@@ -7,7 +7,9 @@ import calliope.exceptions
 from calliope.analysis import postprocess
 import pyomo.core as po
 
-ROOFTOP_TECH_NAME = "roof_mounted_pv"
+ROOFTOP_TECH_NAME1 = "roof_mounted_pv_n"
+ROOFTOP_TECH_NAME2 = "roof_mounted_pv_e_w"
+ROOFTOP_TECH_NAME3 = "roof_mounted_pv_s_flat"
 UTILITY_TECH_NAME = "open_field_pv"
 WIND_TECH_NAME1 = "wind_onshore_monopoly"
 WIND_TECH_NAME2 = "wind_onshore_competing"
@@ -19,9 +21,9 @@ def run(path_to_model, override_dict, roof_share, util_share, wind_share, offsho
     assert roof_share + util_share + wind_share + offshore_share == 100
     set_log_verbosity("info", include_solver_output=True, capture_warnings=True)
     if resolution == "national":
-        scenario = f"no-hydro-costs,stylised-storage,{resolution}-autarky-100-percent"
+        scenario = f"no-hydro-costs,stylised-storage,directional-rooftop-pv,{resolution}-autarky-100-percent"
     else:
-        scenario = f"no-hydro-costs,stylised-storage"
+        scenario = f"no-hydro-costs,stylised-storage,directional-rooftop-pv"
     model = calliope.Model(
         path_to_model,
         scenario=scenario,
@@ -50,7 +52,7 @@ def rooftop_constraint(share):
         lhs = sum(
             model.energy_cap[loc_tech]
             for loc_tech in model.loc_techs
-            if loc_tech.split("::") == [loc, ROOFTOP_TECH_NAME]
+            if is_rooftop_pv(loc_tech) and (loc_tech.split("::")[0] == loc)
 
         )
         rhs = share * sum(
@@ -126,10 +128,21 @@ def is_wind(loc_tech):
     )
 
 
+def is_rooftop_pv(loc_tech):
+    loc_tech = str(loc_tech)
+    return (
+        (ROOFTOP_TECH_NAME1 in loc_tech)
+        or (ROOFTOP_TECH_NAME2 in loc_tech)
+        or (ROOFTOP_TECH_NAME3 in loc_tech)
+    )
+
+
 def is_pv_or_wind(loc_tech):
     loc_tech = str(loc_tech)
     return (
-        (ROOFTOP_TECH_NAME in loc_tech)
+        (ROOFTOP_TECH_NAME1 in loc_tech)
+        or (ROOFTOP_TECH_NAME2 in loc_tech)
+        or (ROOFTOP_TECH_NAME3 in loc_tech)
         or (UTILITY_TECH_NAME in loc_tech)
         or (WIND_TECH_NAME1 in loc_tech)
         or (WIND_TECH_NAME2 in loc_tech)

@@ -46,11 +46,12 @@ rule model:
         "build/model/{resolution}/locations.yaml",
         "build/model/{resolution}/link-all-neighbours.yaml",
         "build/model/{resolution}/electricity-demand.csv",
+        "build/model/{resolution}/directional-rooftop.yaml",
         rules.import_restrictions.output,
         expand(
             "build/model/{{resolution}}/capacityfactors-{technology}.csv",
-            technology=["open-field-pv", "rooftop-pv", "wind-offshore", "wind-onshore",
-                        "hydro-ror", "hydro-reservoir-inflow"],
+            technology=["open-field-pv", "rooftop-pv-n", "rooftop-pv-e-w", "rooftop-pv-s-flat",
+                        "wind-offshore", "wind-onshore", "hydro-ror", "hydro-reservoir-inflow"],
         ),
         definition = "src/template/model.yaml"
     output:

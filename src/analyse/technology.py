@@ -20,7 +20,7 @@ def read_data(path_to_data, land_use_factors):
         .energy_cap
         .sum("locs")
         .sel(techs=["wind_onshore_monopoly", "wind_onshore_competing", "wind_offshore",
-                    "roof_mounted_pv", "open_field_pv"])
+                    "roof_mounted_pv_n", "roof_mounted_pv_e_w", "roof_mounted_pv_s_flat", "open_field_pv"])
     ) * land_use_factors).sum("techs").to_series()
 
     cost_data.index = scenario_name_to_multiindex(cost_data.index)
