@@ -26,11 +26,21 @@
 @page {
     size: A4;
     background-color: #ffffff;
+    margin-left: 3cm;
+    margin-right: 3cm;
+    margin-top: 3cm;
+    margin-bottom: 4cm;
     @bottom-center {
         font-family: KlinicSlabFont, serif;
         font-size: 1em;
         content: counter(page);
       }
+}
+
+@media print {
+    body {
+        font-size: 15px;
+    }
 }
 
 html {
@@ -40,6 +50,7 @@ html {
     -webkit-hyphens: auto;
     -ms-hyphens: auto;
     hyphens: auto;
+    hyphenate-character: "-";
 }
 
 body {
@@ -52,7 +63,6 @@ body {
     padding: 10px 20px;
     display: block;
     -webkit-font-smoothing: antialiased;
-    font-size: large;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -60,22 +70,32 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1.title {
-    font-size: xx-large;
+    font-size: 1.8em;
     line-height: 120%;
     margin-top: 1.5em;
 }
 
 h1 {
-    font-size: x-large;
+    font-size: 1.5em;
     margin-top: 1.5em;
 }
 
 h2, h3, h4, h5, h6 {
-    font-size: large;
+    font-size: 1em;
 }
 
 h1:first-child, h2:first-child, h3:first-child, h4:first-child {
     margin-top: 0
+}
+
+p {
+    font-size: 1em;
+    margin-top: 0;
+    margin-bottom: 1em;
+}
+
+h1 + p, h2 + p, h3 + p, h4 + p, h5 + p, h6 + p, div.fignos + p, div.tablenos + p {
+    margin-top: 1em;
 }
 
 p.author {
@@ -147,7 +167,8 @@ sub {
 }
 
 figure {
-    margin: 0
+    margin: 0;
+    font-size: smaller;
 }
 
 img {
@@ -193,8 +214,7 @@ form, legend, label {
 }
 
 caption, figcaption {
-    font-size: small;
-    line-height: 18px;
+    font-size: smaller;
     page-break-before: avoid;
     page-break-inside: avoid;
 }
