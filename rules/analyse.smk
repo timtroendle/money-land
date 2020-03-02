@@ -168,7 +168,7 @@ rule absolute_boxenplot_uncertainty:
 
 
 rule wind_share_plot:
-    message: "Create plot uncertainty of land requirements."
+    message: "Create plot of max wind share."
     input:
         src = "src/analyse/wind.py",
         xy = rules.xy.output[0]
