@@ -46,11 +46,10 @@ def plot_observations(path_to_xy, path_to_plot):
         ax=ax_land_use
     )
     ax_land_use.set_xlabel("Land requirements (% total land)")
+    ax_land_use.set_ylabel("Frequency (millions)")
 
     ax_land_use.annotate("b", xy=[-0.08, 1.05], xycoords='axes fraction',
                          fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
-    for tick in ax_land_use.yaxis.get_major_ticks():
-        tick.set_visible(False)
 
     sns.despine(fig=fig)
     fig.tight_layout()
