@@ -142,6 +142,7 @@ rule technology_plot:
     input:
         src = "src/analyse/technology_plot.py",
         results = rules.xy.output[0]
+    params: land_decrease = 0.5
     conda: "../envs/default.yaml"
     output: "build/output/{resolution}/{land}/technology.{plot_suffix}"
     script: "../src/analyse/technology_plot.py"

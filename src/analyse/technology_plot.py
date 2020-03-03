@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import scipy
 import pandas as pd
 import xarray as xr
 import seaborn as sns
@@ -19,13 +20,31 @@ idx = pd.IndexSlice
 class PlotData:
     name: str
     data: pd.DataFrame
+    abs_data: pd.DataFrame
     optimal_path: pd.Series
     average_slope: float
-    ylabel: str = "Cost relative to\n cost minimal case"
-    xlabel: str = "Land requirements relative\nto cost minimal case"
+    ylabel: str = "Cost relative to\n cost-minimal case"
+    xlabel: str = "Land requirements relative\nto cost-minimal case"
+
+    def interpolate_cost(self, new_land_use):
+        cost_land_use = self.data.loc[self.optimal_path.index]
+        share1 = cost_land_use[cost_land_use.land_use < new_land_use].iloc[0].name
+        share2 = cost_land_use[cost_land_use.land_use > new_land_use].iloc[-1].name
+        new_cost = scipy.interpolate.interp1d(
+            [self.data.loc[share1, "land_use"], self.data.loc[share2, "land_use"]],
+            [self.data.loc[share1, "cost"], self.data.loc[share2, "cost"]]
+        )(new_land_use).item()
+        return new_cost
+
+    def average_slope_until(self, land_use):
+        ref = self.abs_data.loc[self.optimal_path.index[0]]
+
+        delta_land = ref.land_use - ref.land_use * land_use
+        delta_cost = ref.cost - ref.cost * self.interpolate_cost(0.5)
+        return delta_cost / delta_land / 1e6 # to m2
 
 
-def technology_plot(path_to_results, path_to_plot):
+def technology_plot(path_to_results, land_decrease, path_to_plot):
     sns.set_context("paper")
     plot_datas = read_data(path_to_results)
     fig = plt.figure(figsize=(8, 3))
@@ -47,33 +66,33 @@ def technology_plot(path_to_results, path_to_plot):
             marker="o",
             markersize=5
         )
-        first_point = plot_data.data.loc[plot_data.optimal_path.index[0]]
-        last_point = plot_data.data.loc[plot_data.optimal_path.index[-1]]
+        low_land_use = land_decrease
+        cost_at_low_land_use = plot_data.interpolate_cost(land_decrease)
         ax.vlines(
-            x=first_point["land_use"],
-            ymin=first_point["cost"],
-            ymax=last_point["cost"],
+            x=1.0,
+            ymin=1.0,
+            ymax=cost_at_low_land_use,
             color=GREY,
             linestyle=":",
         )
         ax.hlines(
-            y=last_point["cost"],
-            xmin=last_point["land_use"],
-            xmax=first_point["land_use"],
+            y=cost_at_low_land_use,
+            xmin=low_land_use,
+            xmax=1.0,
             color=GREY,
             linestyle=":",
         )
         ax.plot(
-            (first_point["land_use"], last_point["land_use"]),
-            (first_point["cost"], last_point["cost"]),
+            (1.0, low_land_use),
+            (1.0, cost_at_low_land_use),
             color=GREY,
             linestyle=":"
         )
         ax.annotate(
-            s=f"{plot_data.average_slope:.2f}" + r" $ \frac{EUR}{m^2 \cdot yr} $",
-            xy=(first_point["land_use"], last_point["cost"]),
-            xytext=(0.35, last_point["cost"]),
-            verticalalignment="bottom" if last_point["cost"] < plot_data.data.cost.max() else "top",
+            s=f"{plot_data.average_slope_until(land_decrease):.2f}" + r" $ \frac{EUR}{m^2 \cdot yr} $",
+            xy=(1.0, cost_at_low_land_use),
+            xytext=(0.5, cost_at_low_land_use),
+            verticalalignment="bottom" if cost_at_low_land_use < plot_data.data.cost.max() else "top",
             color=GREY
         )
         ax.annotate(
@@ -104,18 +123,21 @@ def read_data(path_to_data):
         PlotData(
             name="a - Offshore wind",
             data=rel_data,
+            abs_data=data,
             optimal_path=optimal_path_series(data, "offshore"),
             average_slope=average_slope(data, optimal_path_series(data, "offshore"))
         ),
         PlotData(
             name="b - Utility-scale PV",
             data=rel_data,
+            abs_data=data,
             optimal_path=optimal_path_series(data, "util"),
             average_slope=average_slope(data, optimal_path_series(data, "util"))
         ),
         PlotData(
             name="c - Rooftop PV",
             data=rel_data,
+            abs_data=data,
             optimal_path=optimal_path_series(data, "roof"),
             average_slope=average_slope(data, optimal_path_series(data, "roof"))
         )
@@ -176,5 +198,6 @@ def average_slope(data, optimal_path):
 if __name__ == "__main__":
     technology_plot(
         path_to_results=snakemake.input.results,
+        land_decrease=snakemake.params.land_decrease,
         path_to_plot=snakemake.output[0]
     )

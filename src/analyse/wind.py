@@ -31,12 +31,14 @@ def plot_wind_share(path_to_xy, path_to_plot):
 
     sns.boxenplot(
         data=data,
-        y="Max capacity share onshore wind (%)",
-        x="Land area limit (%)",
-        color=BLUE,
+        y="Max capacity share wind (%)",
+        x="Land area limit (% total land)",
+        hue="Technologies in addition to onshore wind",
+        palette=sns.light_palette(GREY, n_colors=3, reverse=True),
         outlier_prop=0.01,
         scale="area",
         width=0.7,
+        s=1.0,
         ax=ax
     )
 
@@ -51,13 +53,18 @@ def calculate_data(path_to_xy_data):
         xr
         .ones_like(xy.cost.sum("scenario"))
         .rename("share")
-        .expand_dims(threshold=THRESHOLDS)
+        .expand_dims(tech=["Utility-scale PV", "Rooftop PV and offshore wind"], threshold=THRESHOLDS)
     ) * np.nan
 
-    for threshold in THRESHOLDS:
-        absolute_threshold = threshold * TOTAL_EUROPEAN_LAND_MASS_KM2
-        mask = xy.land_use <= absolute_threshold
-        data.loc[{"threshold": threshold}] = xy.where(mask)["wind"].max("scenario")
+    for tech in ["Utility-scale PV", "Rooftop PV and offshore wind"]:
+        if tech == "Utility-scale PV":
+            tech_mask = (xy["roof"] == 0) & (xy["offshore"] == 0)
+        else:
+            tech_mask = xy["util"] == 0
+        for threshold in THRESHOLDS:
+            absolute_threshold = threshold * TOTAL_EUROPEAN_LAND_MASS_KM2
+            mask = tech_mask & (xy.land_use <= absolute_threshold)
+            data.loc[{"tech": tech, "threshold": threshold}] = xy.where(mask)["wind"].max("scenario")
 
     return (
         data
@@ -66,7 +73,11 @@ def calculate_data(path_to_xy_data):
         .assign(
             threshold=data.to_series().reset_index().threshold * 100, # to percent
         )
-        .rename(columns={"threshold": "Land area limit (%)", "share": "Max capacity share onshore wind (%)"})
+        .rename(columns={
+            "threshold": "Land area limit (% total land)",
+            "share": "Max capacity share wind (%)",
+            "tech": "Technologies in addition to onshore wind"
+        })
     )
 
 
@@ -147,7 +158,7 @@ def _lvplot(self, box_data, positions,
 
             # Plot the medians
             ax.plot([x - widths / 2, x + widths / 2], [y, y],
-                    c='.15', alpha=.45, **kws)
+                    c='.15', alpha=.45)
 
             ax.scatter(np.repeat(x, len(outliers)), outliers,
                        marker='d', c=hex_color, **kws)
@@ -157,7 +168,7 @@ def _lvplot(self, box_data, positions,
 
             # Plot the medians
             ax.plot([y, y], [x - widths / 2, x + widths / 2],
-                    c='.15', alpha=.45, **kws)
+                    c='.15', alpha=.45)
 
             ax.scatter(outliers, np.repeat(x, len(outliers)),
                        marker='d', c=hex_color, **kws)

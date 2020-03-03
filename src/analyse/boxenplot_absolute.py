@@ -36,7 +36,7 @@ def boxenplot(path_to_xy_data, path_to_plot):
 
     sns.boxenplot(
         data=data,
-        x="Land area limit (%)",
+        x="Land area limit (% total land)",
         y="cost",
         hue="Supply technology",
         hue_order=["Offshore wind", "Utility-scale PV", "Rooftop PV"],
@@ -92,7 +92,7 @@ def calculate_data(path_to_xy_data):
             threshold=data.to_series().reset_index().threshold * 100, # to percent
             cost=data.to_series().reset_index().cost * 100 # to percent
         )
-        .rename(columns={"threshold": "Land area limit (%)", "tech": "Supply technology"})
+        .rename(columns={"threshold": "Land area limit (% total land)", "tech": "Supply technology"})
         .replace({"offshore": "Offshore wind", "util": "Utility-scale PV", "roof": "Rooftop PV"})
     )
 
