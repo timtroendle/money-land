@@ -47,6 +47,14 @@ alignment: LRRRRRR
 include: report/overview-cost-assumptions.csv
 include-encoding: UTF-8
 markdown: True
+width:
+    - 0.14
+    - 0.14
+    - 0.14
+    - 0.14
+    - 0.14
+    - 0.14
+    - 0.14
 ---
 ```
 
@@ -65,6 +73,13 @@ alignment: LLLLLR
 include: report/overview-uncertain-parameters.csv
 include-encoding: UTF-8
 markdown: True
+width:
+    - 0.2
+    - 0.2
+    - 0.2
+    - 0.1
+    - 0.1
+    - 0.2
 ---
 ```
 
