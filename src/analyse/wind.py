@@ -34,7 +34,7 @@ def plot_wind_share(path_to_xy, path_to_plot):
         y="Max capacity share wind (%)",
         x="Land area limit (% total land)",
         hue="Technologies in addition to onshore wind",
-        palette=sns.light_palette(GREY, n_colors=3, reverse=True),
+        palette=sns.light_palette(GREY, n_colors=3, reverse=False)[1:],
         outlier_prop=0.01,
         scale="area",
         width=0.7,
@@ -43,6 +43,10 @@ def plot_wind_share(path_to_xy, path_to_plot):
     )
 
     sns.despine()
+    ax.legend(frameon=False)
+    for rectangle in ax.get_legend().legendHandles:
+        rectangle.set_linewidth(0)
+
     fig.tight_layout()
     fig.savefig(path_to_plot, dpi=300)
 
@@ -53,11 +57,11 @@ def calculate_data(path_to_xy_data):
         xr
         .ones_like(xy.cost.sum("scenario"))
         .rename("share")
-        .expand_dims(tech=["Utility-scale PV", "Rooftop PV and offshore wind"], threshold=THRESHOLDS)
+        .expand_dims(tech=["Utility-scale PV & onshore wind", "Rooftop PV, off- & onshore wind"], threshold=THRESHOLDS)
     ) * np.nan
 
-    for tech in ["Utility-scale PV", "Rooftop PV and offshore wind"]:
-        if tech == "Utility-scale PV":
+    for tech in ["Utility-scale PV & onshore wind", "Rooftop PV, off- & onshore wind"]:
+        if tech == "Utility-scale PV & onshore wind":
             tech_mask = (xy["roof"] == 0) & (xy["offshore"] == 0)
         else:
             tech_mask = xy["util"] == 0

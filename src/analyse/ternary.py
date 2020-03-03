@@ -185,11 +185,7 @@ def plot_diverging_colorbar(fig, ax, norm, cmap, label, land_use_data):
     s_m = matplotlib.cm.ScalarMappable(cmap=cmap, norm=matplotlib.colors.Normalize(vmin=0, vmax=land_use_data.max()))
     s_m.set_array([])
     cbar = fig.colorbar(s_m, ax=ax, fraction=1, aspect=35, shrink=1.0, orientation="horizontal")
-    cbar_ticks = np.linspace(
-        start=land_use_data.min(),
-        stop=land_use_data.max(),
-        num=6
-    )
+    cbar_ticks = [0, 0.5, 1.0, land_use_data.max()]
     cbar.set_ticks(cbar_ticks)
     cbar.set_ticklabels(["{:.1f}".format(tick)
                          for tick in cbar.get_ticks()])
