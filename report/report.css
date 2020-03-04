@@ -297,3 +297,7 @@ table caption {
     page-break-after: avoid;
     page-break-inside: avoid;
 }
+
+#refs {
+    line-height: 1.2em;
+}
