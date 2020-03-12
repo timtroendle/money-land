@@ -15,7 +15,7 @@ onerror:
         shell("echo "" | mail -s 'money-land crashed' {config[email]}")
 wildcard_constraints:
     resolution = "((continental)|(national))", # supported spatial resolutions
-    plot_suffix = "((png)|(svg))"
+    plot_suffix = "((png)|(svg)|(tif))"
 
 
 rule all:
@@ -23,14 +23,14 @@ rule all:
     input:
         f"build/output/{config['resolution']['space']}/report.html",
         f"build/output/{config['resolution']['space']}/report.pdf",
-        f"build/logs/{config['resolution']['space']}/test-report.html",
-        f"build/output/{config['resolution']['space']}/land-use/boxenplot-relative.png"
+        f"build/output/{config['resolution']['space']}/report.docx",
+        f"build/logs/{config['resolution']['space']}/test-report.html"
 
 
 rule copy_report_file:
     message: "Copy file {input[0]} into dedicated report folder."
     input: "build/output/{resolution}/{filename}.{suffix}"
-    wildcard_constraints: suffix = "((csv)|(png)|(svg))"
+    wildcard_constraints: suffix = "((csv)|(png)|(svg)|(tif))"
     output: "build/output/{resolution}/report/{filename}.{suffix}"
     shell: "ln {input} {output}"
 
@@ -66,12 +66,12 @@ rule report:
         "report/report.md",
         "report/pandoc-metadata.yml",
         "build/output/{resolution}/report/supply-shares.png",
-        "build/output/{resolution}/report/land-use/observations.svg",
-        "build/output/{resolution}/report/land-use/ternary.svg",
-        "build/output/{resolution}/report/land-use/technology.svg",
+        "build/output/{resolution}/report/land-use/observations.png",
+        "build/output/{resolution}/report/land-use/ternary.png",
+        "build/output/{resolution}/report/land-use/technology.png",
         "build/output/{resolution}/report/land-use/boxenplot-absolute.png",
         "build/output/{resolution}/report/land-use/wind.png",
-        "build/output/{resolution}/report/flexibility.svg",
+        "build/output/{resolution}/report/flexibility.png",
         "build/output/{resolution}/report/overview-cost-assumptions.csv",
         "build/output/{resolution}/report/overview-uncertain-parameters.csv",
     params: options = pandoc_options
