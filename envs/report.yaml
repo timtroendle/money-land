@@ -9,6 +9,6 @@ dependencies:
     - weasyprint==51
     - pip=19.2.3
     - pip:
-        - pandoc-tablenos==2.1.1
-        - pandoc-fignos==2.2.0
+        - pandoc-tablenos==1.4.2
+        - pandoc-fignos==1.4.2
         - pantable==0.12.2
