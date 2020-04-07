@@ -25,6 +25,7 @@ def boxenplot(path_to_xy_data, path_to_plot):
     # monkey patch seaborn
     # * to allow smaller rhombs in boxenplot
     # * to handle zero width/height boxes
+    # * to ensure smallest box is _not_ white
     sns.categorical._LVPlotter._lvplot = _lvplot
     sns.categorical._LVPlotter._width_functions = _width_functions
 
@@ -189,7 +190,7 @@ def _lvplot(self, box_data, positions,
                        marker='d', c=hex_color, **kws)
 
         # Construct a color map from the input color
-        rgb = [[1, 1, 1], hex_color]
+        rgb = sns.light_palette(hex_color, n_colors=10)[1:]
         cmap = mpl.colors.LinearSegmentedColormap.from_list('new_map', rgb)
         collection = PatchCollection(boxes, cmap=cmap)
 
