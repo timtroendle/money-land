@@ -43,6 +43,8 @@ rule model:
         "build/model/renewable-techs.yaml",
         "build/model/storage-techs.yaml",
         "build/model/link-techs.yaml",
+        "build/model/demand-techs.yaml",
+        "build/model/build-metadata.yaml",
         "build/model/{resolution}/locations.yaml",
         "build/model/{resolution}/link-all-neighbours.yaml",
         "build/model/{resolution}/electricity-demand.csv",

@@ -17,16 +17,12 @@ OFFSHORE_TECH_NAME = "wind_offshore"
 
 
 def run(path_to_model, override_dict, roof_share, util_share, wind_share, offshore_share,
-        units_without_shore, resolution, path_to_output):
+        units_without_shore, overrides, path_to_output):
     assert roof_share + util_share + wind_share + offshore_share == 100
     set_log_verbosity("info", include_solver_output=True, capture_warnings=True)
-    if resolution == "national":
-        scenario = f"no-hydro-costs,stylised-storage,directional-rooftop-pv,{resolution}-autarky-100-percent"
-    else:
-        scenario = f"no-hydro-costs,stylised-storage,directional-rooftop-pv"
     model = calliope.Model(
         path_to_model,
-        scenario=scenario,
+        scenario=",".join(overrides),
         override_dict=override_dict
     )
     model.run(build_only=True)
@@ -191,6 +187,6 @@ if __name__ == "__main__":
         wind_share=int(snakemake.wildcards.wind),
         offshore_share=int(snakemake.wildcards.offshore),
         units_without_shore=snakemake.params.no_shore,
-        resolution=snakemake.params.resolution,
+        overrides=snakemake.params.overrides,
         path_to_output=snakemake.output[0]
     )

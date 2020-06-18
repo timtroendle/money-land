@@ -29,8 +29,9 @@ rule run_continental:
         model = "build/model/continental/model.yaml"
     params:
         override_dict = CALLIOPE_OVERRIDE_DICT,
-        resolution = "continental",
-        no_shore = config["units-without-shore"]["continental"]
+        no_shore = config["units-without-shore"]["continental"],
+        overrides = ["no-hydro-costs", "stylised-storage", "directional-rooftop-pv",
+                     "freeze-hydro-capacities"]
     output: "build/output/continental/runs/roof-{roof}-util-{util}-wind-{wind}-offshore-{offshore}.nc"
     conda: "../envs/calliope.yaml"
     script: "../src/analyse/run.py"
@@ -43,8 +44,9 @@ rule run_national:
         model = "build/model/national/model.yaml"
     params:
         override_dict = CALLIOPE_OVERRIDE_DICT,
-        resolution = "national",
-        no_shore = config["units-without-shore"]["national"]
+        no_shore = config["units-without-shore"]["national"],
+        overrides = ["no-hydro-costs", "stylised-storage", "directional-rooftop-pv",
+                     "national-autarky-100-percent", "freeze-hydro-capacities"]
     output: "build/output/national/runs/roof-{roof}-util-{util}-wind-{wind}-offshore-{offshore}.nc"
     conda: "../envs/calliope.yaml"
     script: "../src/analyse/run.py"

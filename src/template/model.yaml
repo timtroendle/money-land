@@ -3,6 +3,7 @@ import:
     - '../renewable-techs.yaml'
     - '../storage-techs.yaml'
     - '../link-techs.yaml'
+    - '../demand-techs.yaml'
     - './locations.yaml'
     - './link-all-neighbours.yaml'
     - './import-restrictions.yaml'
@@ -26,14 +27,6 @@ run:
         Crossover: 0 # stop after barrier, do not perform crossover
         FeasibilityTol: 1e-3
         OptimalityTol: 1e-4
-techs:
-    demand_elec:
-        essentials:
-            name: 'Electricity demand'
-            parent: demand
-            carrier: electricity
-        constraints:
-            resource: file=electricity-demand.csv
 overrides:
     no-hydro-costs:
         # Because we force all hydro to current levels, there
