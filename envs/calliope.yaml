@@ -8,3 +8,4 @@ dependencies:
     - pandas=0.25.1
     - gurobi=9.0.0
     - calliope=0.6.5
+    - pyomo=5.6.8 # to avoid https://github.com/calliope-project/calliope/issues/309
