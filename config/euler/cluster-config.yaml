@@ -19,3 +19,7 @@ test:
     runtime: 60
 uncertainty_analysis:
     runtime: 120
+run_national_test_temporalresolution:
+    runtime: 240
+    cores: 6
+    memory: 10000

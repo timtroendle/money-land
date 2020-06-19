@@ -1,6 +1,6 @@
 resolution:
     space: national
-    time: 4H
+    time: 3H
 uncertainty:
     number-runs: 11111 # leading to ~100_000 sample
 calliope-parameters: # arbitrary many calliope parameters applied as override
