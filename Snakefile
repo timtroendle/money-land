@@ -8,11 +8,11 @@ localrules: all, clean, copy_report_file, report, supplementary_material
 onstart:
     shell("mkdir -p build/logs")
 onsuccess:
-    if "email" in config.keys():
-        shell("echo "" | mail -s 'money-land succeeded' {config[email]}")
+    if "ifttt_apikey" in config.keys():
+        trigger_ifttt(event_name="snakemake_succeeded", apikey=config["ifttt_apikey"])
 onerror:
-    if "email" in config.keys():
-        shell("echo "" | mail -s 'money-land crashed' {config[email]}")
+    if "ifttt_apikey" in config.keys():
+        trigger_ifttt(event_name="snakemake_failed", apikey=config["ifttt_apikey"])
 wildcard_constraints:
     resolution = "((continental)|(national))", # supported spatial resolutions
     plot_suffix = "((png)|(svg)|(tif))"
@@ -114,3 +114,10 @@ rule clean: # removes all generated results
         echo "Data downloaded to data/ has not been cleaned."
         """
 
+
+def trigger_ifttt(event_name, apikey):
+    import requests
+    response = requests.post(
+            f'https://maker.ifttt.com/trigger/{event_name}/with/key/{apikey}',
+            data={"value1": "money-land"}
+    )
