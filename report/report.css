@@ -78,14 +78,23 @@ h1.title {
 h1 {
     font-size: 1.5em;
     margin-top: 1.5em;
+    margin-bottom: 1em;
 }
 
-h2, h3, h4, h5, h6 {
+h2 {
+    font-size: 1.125em;
+    margin-top: 0em;
+    margin-bottom: 1em;
+}
+
+h3, h4, h5, h6 {
     font-size: 1em;
+    margin-top: 0em;
+    margin-bottom: 1em;
 }
 
 h1:first-child, h2:first-child, h3:first-child, h4:first-child {
-    margin-top: 0
+    margin-top: 0;
 }
 
 p {
@@ -94,13 +103,12 @@ p {
     margin-bottom: 1em;
 }
 
-h1 + p, h2 + p, h3 + p, h4 + p, h5 + p, h6 + p, div.fignos + p, div.tablenos + p {
-    margin-top: 1em;
+div.fignos, div.tablenos {
+    margin-bottom: 1em;
 }
 
 p.author {
     font-style: italic;
-    font-size: smaller;
     line-height: .3em;
 }
 
@@ -118,7 +126,7 @@ a {
 }
 
 a:visited {
-    color: #4A6B82
+    color: #07c
 }
 
 a:hover {
@@ -300,4 +308,20 @@ table caption {
 
 #refs {
     line-height: 1.2em;
+}
+
+@media print {
+    .pagebreak { page-break-before: always; } /* page-break-after works, as well */
+
+    #maintext {
+        page: main;
+    }
+
+    body {
+        font-size: 16px;
+    }
+
+    h1 {
+        margin-top: 0em;
+    }
 }
