@@ -180,6 +180,18 @@ rule wind_share_plot:
     script: "../src/analyse/wind.py"
 
 
+rule map_land_requirements:
+    message: "Create map of total land requirements."
+    input:
+        src = "src/analyse/map_land_req.py",
+        xy = rules.xy.output[0],
+        aggregated_results = rules.aggregated_results.output[0],
+        shapes = eurocalliope("build/data/{resolution}/units.geojson")
+    conda: "../envs/default.yaml"
+    output: "build/output/{resolution}/{land}/map-land-requirements.{plot_suffix}"
+    script: "../src/analyse/map_land_req.py"
+
+
 rule overview_cost_assumptions:
     message: "Create table of key cost assumptions."
     input:

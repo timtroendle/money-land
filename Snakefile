@@ -21,9 +21,9 @@ wildcard_constraints:
 rule all:
     message: "Run entire analysis and compile report."
     input:
-        f"build/output/{config['resolution']['space']}/report.html",
         f"build/output/{config['resolution']['space']}/report.pdf",
         f"build/output/{config['resolution']['space']}/report.docx",
+        f"build/output/{config['resolution']['space']}/supplementary.docx",
         f"build/logs/{config['resolution']['space']}/test-report.html"
 
 
@@ -94,6 +94,7 @@ rule supplementary_material:
     input:
         GENERAL_DOCUMENT_DEPENDENCIES,
         "report/supplementary.md",
+        "build/output/{resolution}/report/land-use/map-land-requirements.png"
     params: options = pandoc_options
     output: "build/output/{resolution}/supplementary.{suffix}"
     conda: "envs/report.yaml"
