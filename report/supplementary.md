@@ -14,7 +14,7 @@ xnos-cleveref: True
 fignos-plus-name: "Fig\ "
 tablenos-plus-name: "Table\ "
 fignos-caption-name: Fig
-date: 2020-07-04-dev
+date: 2020-07-04
 ---
 
 This document contains supporting information for:
