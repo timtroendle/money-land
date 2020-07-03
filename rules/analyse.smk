@@ -80,7 +80,7 @@ rule sample_x:
         src = "src/analyse/x.py",
     params:
         runs = config["uncertainty"]["number-runs"],
-        uncertain_parameters = config["uncertainty"]["parameters"]
+        uncertain_parameters = lambda wildcards: config["uncertainty"]["parameters"][wildcards["land"]]
     conda: "../envs/default.yaml"
     output:
         x = "build/output/{resolution}/{land}/x.csv",
@@ -116,17 +116,6 @@ rule ternary_plots:
     conda: "../envs/default.yaml"
     output: "build/output/{resolution}/{land}/ternary.{plot_suffix}"
     script: "../src/analyse/ternary.py"
-
-
-rule scatter_plot:
-    message: "Create scatter plots of results."
-    input:
-        src = "src/analyse/scatter.py",
-        results = rules.aggregated_results.output[0]
-    params: land_factors = lambda wildcards: config["parameters"][wildcards["land"]]
-    conda: "../envs/default.yaml"
-    output: "build/output/{resolution}/{land}/scatter-{case}.{plot_suffix}"
-    script: "../src/analyse/scatter.py"
 
 
 rule flexibility_plot:

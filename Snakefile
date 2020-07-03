@@ -23,7 +23,7 @@ rule all:
     input:
         f"build/output/{config['resolution']['space']}/report.pdf",
         f"build/output/{config['resolution']['space']}/report.docx",
-        f"build/output/{config['resolution']['space']}/supplementary.docx",
+        f"build/output/{config['resolution']['space']}/supplementary.pdf",
         f"build/logs/{config['resolution']['space']}/test-report.html"
 
 
@@ -94,7 +94,8 @@ rule supplementary_material:
     input:
         GENERAL_DOCUMENT_DEPENDENCIES,
         "report/supplementary.md",
-        "build/output/{resolution}/report/land-use/map-land-requirements.png"
+        "build/output/{resolution}/report/land-use/map-land-requirements.png",
+        "build/output/{resolution}/report/footprint-only/ternary.png",
     params: options = pandoc_options
     output: "build/output/{resolution}/supplementary.{suffix}"
     conda: "envs/report.yaml"
@@ -103,7 +104,7 @@ rule supplementary_material:
         """
         cd report
         ln -s ../build/output/{wildcards.resolution}/report .
-        {PANDOC} supplementary.md {params.options} --table-of-contents \
+        {PANDOC} supplementary.md {params.options} --table-of-contents --number-sections \
         -o ../build/output/{wildcards.resolution}/supplementary.{wildcards.suffix}
         """
 
