@@ -1,25 +1,11 @@
 ---
-title: Supply-side options to reduce land requirements of fully renewable electricity in Europe
 subtitle: Supporting Information
-author:
-    - Tim Tröndle
-institute: IASS Potsdam and ETH Zürich
-bibliography:
-    - 'literature.bib'
-csl: plos-one.csl
-css: report.css
-link-citations: True
-lang: en-GB
-xnos-cleveref: True
-fignos-plus-name: "Fig\ "
-tablenos-plus-name: "Table\ "
-fignos-caption-name: Fig
-date: 2020-07-04
+highlights-and-abstract: False
 ---
 
 This document contains supporting information for:
 
-<mark>Tröndle, T. (under review). Supply-side options to reduce land requirements of fully renewable electricity in Europe. <i>PLOS ONE</i>.</mark>
+Tröndle, T., 2020. Supply-side options to reduce land requirements of fully renewable electricity in Europe. <i>PLOS ONE</i>.
 
 <div class="pagebreak"> </div>
 

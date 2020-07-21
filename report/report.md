@@ -1,3 +1,7 @@
+---
+highlights-and-abstract: True
+---
+
 # Introduction
 
 Europe has the potential to generate all its electricity from renewable sources\ [@Jacobson:2017; @Ruiz:2019; @Trondle:2019]. The potential provides a possibility to decarbonise the European electricity system, which is a necessary step to reach the European Commission's goal of becoming a climate-neutral economy by 2050\ [@EuropeanCommission:2018]. Compared to the predominant forms of electricity supply based on fossil and nuclear fuels, land requirements of renewable electricity are high\ [@MacKay:2008; @McDonald:2009; @Smil:2015; @vanZalk:2018], however. A transition to renewable electricity will therefore increase the total land requirements of electricity supply and it may even do so by orders of magnitude.

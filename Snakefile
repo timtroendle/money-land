@@ -40,6 +40,7 @@ GENERAL_DOCUMENT_DEPENDENCIES = [
     "report/report.css",
     "report/plos-one.csl",
     "report/template.html",
+    "report/pandoc-metadata.yaml",
     "report/fonts/KlinicSlabBook.otf",
     "report/fonts/KlinicSlabBookIt.otf",
     "report/fonts/KlinicSlabMedium.otf",
@@ -64,7 +65,6 @@ rule report:
     input:
         GENERAL_DOCUMENT_DEPENDENCIES,
         "report/report.md",
-        "report/pandoc-metadata.yml",
         "build/output/{resolution}/report/supply-shares.png",
         "build/output/{resolution}/report/land-use/observations.png",
         "build/output/{resolution}/report/land-use/ternary.png",
@@ -84,7 +84,8 @@ rule report:
         """
         cd report
         ln -s ../build/output/{wildcards.resolution}/report .
-        {PANDOC} report.md pandoc-metadata.yml {params.options} \
+        {PANDOC} report.md {params.options} \
+        --metadata-file=pandoc-metadata.yaml \
         -o ../build/output/{wildcards.resolution}/report.{wildcards.suffix}
         """
 
@@ -105,6 +106,7 @@ rule supplementary_material:
         cd report
         ln -s ../build/output/{wildcards.resolution}/report .
         {PANDOC} supplementary.md {params.options} --table-of-contents --number-sections \
+        --metadata-file=pandoc-metadata.yaml \
         -o ../build/output/{wildcards.resolution}/supplementary.{wildcards.suffix}
         """
 
