@@ -27,7 +27,6 @@ def plot_wind_share(path_to_xy, path_to_plot):
     sns.categorical._LVPlotter._width_functions = _width_functions
 
     data = calculate_data(path_to_xy)
-    sns.set_context("paper")
     fig = plt.figure(figsize=(8, 4))
     ax = fig.subplots(1, 1)
 

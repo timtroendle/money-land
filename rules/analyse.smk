@@ -68,6 +68,7 @@ rule visualise_supply_shares:
     message: "Visualise supply share space."
     input:
         src = "src/analyse/supply_shares.py",
+        matplotlibrc = "matplotlibrc",
         results = rules.aggregated_results.output[0]
     output: "build/output/{resolution}/supply-shares.{plot_suffix}"
     conda: "../envs/default.yaml"
@@ -102,6 +103,7 @@ rule plot_observations:
     message: "Create overview plot of all observations."
     input:
         src = "src/analyse/observations.py",
+        matplotlibrc = "matplotlibrc",
         xy = rules.xy.output[0]
     conda: "../envs/default.yaml"
     output: "build/output/{resolution}/{land}/observations.{plot_suffix}"
@@ -112,6 +114,7 @@ rule ternary_plots:
     message: "Create ternary plots of results."
     input:
         src = "src/analyse/ternary.py",
+        matplotlibrc = "matplotlibrc",
         results = rules.xy.output[0]
     conda: "../envs/default.yaml"
     output: "build/output/{resolution}/{land}/ternary.{plot_suffix}"
@@ -122,6 +125,7 @@ rule flexibility_plot:
     message: "Create plot of flexibility needs."
     input:
         src = "src/analyse/flexibility.py",
+        matplotlibrc = "matplotlibrc",
         results = rules.aggregated_results.output[0]
     conda: "../envs/default.yaml"
     output: "build/output/{resolution}/flexibility.{plot_suffix}"
@@ -132,6 +136,7 @@ rule technology_plot:
     message: "Create plot for single technologies."
     input:
         src = "src/analyse/technology_plot.py",
+        matplotlibrc = "matplotlibrc",
         results = rules.xy.output[0]
     params: land_decrease = 0.5
     conda: "../envs/default.yaml"
@@ -143,6 +148,7 @@ rule relative_boxenplot_uncertainty:
     message: "Create a boxenplot of uncertainty of relative land reduction."
     input:
         src = "src/analyse/boxenplot_relative.py",
+        matplotlibrc = "matplotlibrc",
         xy = rules.xy.output[0]
     conda: "../envs/default.yaml"
     output: "build/output/{resolution}/{land}/boxenplot-relative.{plot_suffix}"
@@ -153,6 +159,7 @@ rule absolute_boxenplot_uncertainty:
     message: "Create a boxenplot of uncertainty of absolute land reduction."
     input:
         src = "src/analyse/boxenplot_absolute.py",
+        matplotlibrc = "matplotlibrc",
         xy = rules.xy.output[0]
     conda: "../envs/default.yaml"
     output: "build/output/{resolution}/{land}/boxenplot-absolute.{plot_suffix}"
@@ -163,6 +170,7 @@ rule wind_share_plot:
     message: "Create plot of max wind share."
     input:
         src = "src/analyse/wind.py",
+        matplotlibrc = "matplotlibrc",
         xy = rules.xy.output[0]
     conda: "../envs/default.yaml"
     output: "build/output/{resolution}/{land}/wind.{plot_suffix}"
@@ -173,6 +181,7 @@ rule map_land_requirements:
     message: "Create map of total land requirements."
     input:
         src = "src/analyse/map_land_req.py",
+        matplotlibrc = "matplotlibrc",
         xy = rules.xy.output[0],
         aggregated_results = rules.aggregated_results.output[0],
         shapes = eurocalliope("build/data/{resolution}/units.geojson")

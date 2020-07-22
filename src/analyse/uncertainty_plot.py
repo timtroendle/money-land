@@ -9,8 +9,6 @@ RED = "#A01914"
 BLUE = "#4F6DB8"
 YELLOW = "#FABC3C"
 CONTRAST_COLOR = BLUE
-PANEL_FONT_SIZE = 10
-PANEL_FONT_WEIGHT = "bold"
 
 
 def uncertainty_plot(path_to_xy_data, path_to_plot):
@@ -19,7 +17,6 @@ def uncertainty_plot(path_to_xy_data, path_to_plot):
         "util": data["r50_cost_util"] * -1,
         "offshore": data["r50_cost_offshore"] * -1
     }).dropna()
-    sns.set_context("paper")
     fig = plt.figure(figsize=(8, 5))
     gs = gridspec.GridSpec(2, 4, width_ratios=[9, 1, 2, 6], height_ratios=[1, 10])
     ax_joint = fig.add_subplot(gs[1, 0])
@@ -30,20 +27,8 @@ def uncertainty_plot(path_to_xy_data, path_to_plot):
     plot_joint(data, ax_joint, ax_marginal_top, ax_marginal_right)
     plot_diff(data, ax_diff)
 
-    ax_joint.annotate(
-        "a - Joint cost distribution",
-        xy=[-0.08, 1.2],
-        xycoords='axes fraction',
-        fontsize=PANEL_FONT_SIZE,
-        weight=PANEL_FONT_WEIGHT
-    )
-    ax_diff.annotate(
-        "b - Cost difference distribution",
-        xy=[-0.25, 1.2],
-        xycoords='axes fraction',
-        fontsize=PANEL_FONT_SIZE,
-        weight=PANEL_FONT_WEIGHT
-    )
+    ax_joint.set_title("a - Joint cost distribution", loc="left")
+    ax_diff.set_title("b - Cost difference distribution", loc="left")
     fig.tight_layout()
     fig.subplots_adjust(
         left=0.1,

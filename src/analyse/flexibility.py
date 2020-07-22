@@ -10,8 +10,6 @@ from matplotlib import gridspec
 import seaborn as sns
 
 
-PANEL_FONT_SIZE = 10
-PANEL_FONT_WEIGHT = "bold"
 RED = "#A01914"
 BLUE = "#4F6DB8"
 PALETTE = sns.light_palette(RED, as_cmap=True)
@@ -30,7 +28,6 @@ def flexibility(path_to_results, path_to_plot):
     roof_plot_datas = read_data(path_to_results, "roof")
     offshore_plot_datas = read_data(path_to_results, "offshore")
 
-    sns.set_context("paper")
     fig = plt.figure(figsize=(8, 4))
     gs = gridspec.GridSpec(3, 4, width_ratios=[5, 5, 5, 5], height_ratios=[4, 4, 1])
     roof_axes = [fig.add_subplot(gs[0, x]) for x in [0, 1, 2, 3]]
@@ -48,8 +45,7 @@ def flexibility(path_to_results, path_to_plot):
         plot_ternary(plot_datas[0], ax=axes[0], norm=norm)
         plot_ternary(plot_datas[1], ax=axes[1], norm=norm)
         plot_colorbar(fig, cbar_ax, norm, PALETTE)
-        axes[0].annotate(panel_id + " - " + plot_datas[0].name, xy=[-0.08, 1.15], xycoords='axes fraction',
-                         fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
+        axes[0].set_title(panel_id + " - " + plot_datas[0].name, loc="left")
 
     plt.subplots_adjust(
         left=0.02,

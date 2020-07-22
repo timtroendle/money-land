@@ -10,8 +10,6 @@ from matplotlib import gridspec
 import seaborn as sns
 
 
-PANEL_FONT_SIZE = 10
-PANEL_FONT_WEIGHT = "bold"
 TICK_FONT_SIZE = 9
 RED = "#A01914"
 BLUE = "#4F6DB8"
@@ -37,7 +35,6 @@ class PlotData:
 
 def plot_both_ternary(path_to_data, path_to_plot):
     plot_datas = read_data(path_to_data)
-    sns.set_context("paper")
     fig = plt.figure(figsize=(8, 8))
     gs = gridspec.GridSpec(3, 2, width_ratios=[5, 5], height_ratios=[25, 25, 1])
     ax_1 = fig.add_subplot(gs[0, 0])
@@ -150,8 +147,7 @@ def plot_ternary(plot_data, ax, cmap):
     tax.ticks(ticks=range(0, 110, 20), axis='r', linewidth=1, multiple=1, offset=0.04, fontsize=TICK_FONT_SIZE)
     tax.clear_matplotlib_ticks()
     tax._redraw_labels()
-    ax.annotate(plot_data.panel_name, xy=[-0.08, 0.95], xycoords='axes fraction',
-                fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
+    ax.set_title(plot_data.panel_name, loc="left")
     ax.set_aspect(1)
 
 

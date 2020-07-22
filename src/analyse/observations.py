@@ -9,8 +9,6 @@ RED = "#A01914"
 BLUE = "#4F6DB8"
 YELLOW = "#FABC3C"
 CONTRAST_COLOR = BLUE
-PANEL_FONT_SIZE = 10
-PANEL_FONT_WEIGHT = "bold"
 
 TOTAL_EUROPEAN_LAND_MASS_KM2 = 4_920_000 # FIXME inject
 TOTAL_DEMAND_KWH = 3_180_000_000_000 # FIXME inject
@@ -19,7 +17,6 @@ TOTAL_DEMAND_KWH = 3_180_000_000_000 # FIXME inject
 def plot_observations(path_to_xy, path_to_plot):
     ds = xr.open_dataset(path_to_xy)
 
-    sns.set_context("paper")
     fig = plt.figure(figsize=(8, 3))
     gs = gridspec.GridSpec(1, 2)
     ax_cost = fig.add_subplot(gs[0, 0])
@@ -33,8 +30,7 @@ def plot_observations(path_to_xy, path_to_plot):
     )
     ax_cost.set_xlabel("Cost (EUR / kWh)")
     ax_cost.set_ylabel("Frequency (millions)")
-    ax_cost.annotate("a", xy=[-0.08, 1.05], xycoords='axes fraction',
-                     fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
+    ax_cost.set_title("a", loc="left")
 
     land_use = ds.land_use / TOTAL_EUROPEAN_LAND_MASS_KM2 * 100
     land_use = land_use.where(land_use < 5, drop=True) # drop upper 0.1%
@@ -48,8 +44,7 @@ def plot_observations(path_to_xy, path_to_plot):
     ax_land_use.set_xlabel("Land requirements (% total land)")
     ax_land_use.set_ylabel("Frequency (millions)")
 
-    ax_land_use.annotate("b", xy=[-0.08, 1.05], xycoords='axes fraction',
-                         fontsize=PANEL_FONT_SIZE, weight=PANEL_FONT_WEIGHT)
+    ax_land_use.set_title("b", loc="left")
 
     sns.despine(fig=fig)
     fig.tight_layout()

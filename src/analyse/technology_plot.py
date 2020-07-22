@@ -10,8 +10,6 @@ GREY = "#7F7F7F"
 BLUE = "#4F6DB8"
 BRIGHT_COLOR = sns.light_palette(BLUE, 3)[0]
 DARK_COLOR = BLUE
-PANEL_FONT_SIZE = 10
-PANEL_FONT_WEIGHT = "bold"
 
 idx = pd.IndexSlice
 
@@ -45,7 +43,6 @@ class PlotData:
 
 
 def technology_plot(path_to_results, land_decrease, path_to_plot):
-    sns.set_context("paper")
     plot_datas = read_data(path_to_results)
     fig = plt.figure(figsize=(8, 3))
     axes = fig.subplots(1, 3, sharey=True, sharex=True)
@@ -95,13 +92,7 @@ def technology_plot(path_to_results, land_decrease, path_to_plot):
             verticalalignment="bottom" if cost_at_low_land_use < plot_data.data.cost.max() else "top",
             color=GREY
         )
-        ax.annotate(
-            plot_data.name,
-            xy=[-0.08, 1.05],
-            xycoords='axes fraction',
-            fontsize=PANEL_FONT_SIZE,
-            weight=PANEL_FONT_WEIGHT
-        )
+        ax.set_title(plot_data.name, loc="left")
         ax.set_ylabel(plot_data.ylabel)
         ax.set_xlabel(plot_data.xlabel)
     sns.despine()

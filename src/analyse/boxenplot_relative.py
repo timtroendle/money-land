@@ -20,7 +20,6 @@ ALL_TECHS = TECHS + ["wind"]
 def boxenplot(path_to_xy_data, path_to_plot):
     data = calculate_data(path_to_xy_data)
 
-    sns.set_context("paper")
     fig = plt.figure(figsize=(8, 4))
     ax = fig.add_subplot(111)
 

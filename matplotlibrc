@@ -1,0 +1,28 @@
+font.sans-serif: Lato
+font.weight: regular
+axes.titleweight: bold
+
+## The following are seaborns paper context settings
+font.size: 10 # increased from 9.6 for Lato
+axes.labelsize: 10 # increased from 9.6 for Lato
+axes.titlesize: 10 # increased from 9.6 for Lato
+xtick.labelsize: 9 # increased from 8.8 for Lato
+ytick.labelsize: 9 # increased from 8.8 for Lato
+legend.fontsize: 9 # increased from 8.8 for Lato
+legend.title_fontsize: 10 # increased from 9.6 for Lato
+
+axes.linewidth: 1
+grid.linewidth: 0.8
+lines.linewidth: 1.2
+lines.markersize: 4.8
+patch.linewidth: 0.8
+
+xtick.major.width: 1
+ytick.major.width: 1
+xtick.minor.width: 0.8
+ytick.minor.width: 0.8
+
+xtick.major.size: 4.8
+ytick.major.size: 4.8
+xtick.minor.size: 3.2
+ytick.minor.size: 3.2
