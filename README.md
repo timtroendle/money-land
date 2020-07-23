@@ -48,11 +48,11 @@ If you want to run on another cluster, read [snakemake's documentation on cluste
 
 ## Be notified of successes or fails
 
-As the execution of this workflow may take long, you can get notified whenever the execution terminates either successfully or unsuccessfully. Notification are handled by the webservice [IFTTT](https://ifttt.com/) for which you need a free account. To activate notifications, add your IFTTT webhooks apikey to the configuration using the configuration key `ifttt_apikey`. For example, you may want to choose running the workflow the following way to receive notifications:
+As the execution of this workflow may take long, you can get notified whenever the execution terminates either successfully or unsuccessfully. Notification are handled by the webservice [Pushcut](https://pushcut.io/) for which you need a free account. To activate notifications, add your Pushcut secret to the configuration using the configuration key `pushcut_secret`. For example, you may want to choose running the workflow the following way to receive notifications:
 
-    snakemake --use-conda --config ifttt_apikey=<your-apikey>
+    snakemake --use-conda --config pushcut_secret=<your-secret>
 
-This workflow will then trigger the IFTTT events `snakemake_succeeded` and `snakemake_failed`. You can build IFTTT applets that react to these events, and for example let the notification be pushed to your phone or let your internet-connected light bulb flash red or green. [Here's an example](https://pimylifeup.com/using-ifttt-with-the-raspberry-pi/) that you can use as a starting point.
+This workflow will then trigger the Pushcut notifications `snakemake_succeeded` and `snakemake_failed`.
 
 ## Units and scaling
 

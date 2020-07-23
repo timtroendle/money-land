@@ -8,11 +8,11 @@ localrules: all, clean, copy_report_file, report, supplementary_material
 onstart:
     shell("mkdir -p build/logs")
 onsuccess:
-    if "ifttt_apikey" in config.keys():
-        trigger_ifttt(event_name="snakemake_succeeded", apikey=config["ifttt_apikey"])
+    if "pushcut_secret" in config.keys():
+        trigger_pushcut(event_name="snakemake_succeeded", secret=config["pushcut_secret"])
 onerror:
-    if "ifttt_apikey" in config.keys():
-        trigger_ifttt(event_name="snakemake_failed", apikey=config["ifttt_apikey"])
+    if "pushcut_secret" in config.keys():
+        trigger_pushcut(event_name="snakemake_failed", secret=config["pushcut_secret"])
 wildcard_constraints:
     resolution = "((continental)|(national))", # supported spatial resolutions
     plot_suffix = "((png)|(svg)|(tiff))"
@@ -149,9 +149,8 @@ rule clean: # removes all generated results
         """
 
 
-def trigger_ifttt(event_name, apikey):
+def trigger_pushcut(event_name, secret):
     import requests
     response = requests.post(
-            f'https://maker.ifttt.com/trigger/{event_name}/with/key/{apikey}',
-            data={"value1": "money-land"}
+            f'https://api.pushcut.io/{secret}/notifications/{event_name}'
     )
