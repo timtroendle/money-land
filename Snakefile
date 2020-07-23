@@ -4,6 +4,7 @@ configfile: "./config/default.yaml"
 include: "./rules/sync.smk"
 include: "./rules/construct.smk"
 include: "./rules/analyse.smk"
+include: "./rules/publication.smk"
 localrules: all, clean, copy_report_file, report, supplementary_material
 onstart:
     shell("mkdir -p build/logs")
@@ -117,29 +118,6 @@ rule supplementary_material:
         -o ../build/output/{wildcards.resolution}/supplementary.{wildcards.suffix}
         """
 
-
-rule figures:
-    message: "Collect and rename all figures."
-    input:
-        "build/output/{resolution}/supply-shares.{plot_suffix}",
-        "build/output/{resolution}/land-use/observations.{plot_suffix}",
-        "build/output/{resolution}/land-use/ternary.{plot_suffix}",
-        "build/output/{resolution}/land-use/technology.{plot_suffix}",
-        "build/output/{resolution}/land-use/boxenplot-absolute.{plot_suffix}",
-        "build/output/{resolution}/land-use/wind.{plot_suffix}",
-        "build/output/{resolution}/flexibility.{plot_suffix}"
-    output:
-        "build/output/{resolution}/figures/Fig1.{plot_suffix}",
-        "build/output/{resolution}/figures/Fig2.{plot_suffix}",
-        "build/output/{resolution}/figures/Fig3.{plot_suffix}",
-        "build/output/{resolution}/figures/Fig4.{plot_suffix}",
-        "build/output/{resolution}/figures/Fig5.{plot_suffix}",
-        "build/output/{resolution}/figures/Fig6.{plot_suffix}",
-        "build/output/{resolution}/figures/Fig7.{plot_suffix}"
-    run:
-        from shutil import copyfile
-        for i in range(len(output)):
-            copyfile(input[i], output[i])
 
 rule clean: # removes all generated results
     shell:
