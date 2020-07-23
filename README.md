@@ -1,8 +1,13 @@
-# Money Land
+# Supply-side options to reduce land requirements of fully renewable electricity in Europe
 
-Trade-off between land requirements and cost of renewable electricity in Europe.
+Trade-off between land requirements and cost of fully renewable electricity in Europe.
 
 This repository contains the entire scientific project, including code and report. The philosophy behind this repository is that no intermediary results are included, but all results are computed from raw data and code.
+
+[![data DOI](https://img.shields.io/badge/data-10.5281%2Fzenodo.3707812-blue)](https://doi.org/10.5281/zenodo.3707812)
+[![code DOI](https://img.shields.io/badge/code-10.5281%2Fzenodo.3956531-blue)](https://doi.org/10.5281/zenodo.3956531)
+
+This study uses the model of the European electricity system [euro-calliope v1.0](https://zenodo.org/record/3949794).
 
 ## Getting ready
 
