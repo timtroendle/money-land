@@ -112,7 +112,7 @@ rule supplementary_material:
         """
         cd report
         ln -s ../build/output/{wildcards.resolution}/report .
-        {PANDOC} supplementary.md {params.options} --table-of-contents --number-sections \
+        {PANDOC} supplementary.md {params.options} --number-sections \
         --metadata-file=pandoc-metadata.yaml \
         -o ../build/output/{wildcards.resolution}/supplementary.{wildcards.suffix}
         """

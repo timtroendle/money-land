@@ -1,13 +1,7 @@
 ---
-subtitle: Supporting Information
+subtitle: S1 Supporting Information
 highlights-and-abstract: False
 ---
-
-This document contains supporting information for:
-
-Tröndle, T., 2020. Supply-side options to reduce land requirements of fully renewable electricity in Europe. <i>PLOS ONE</i>.
-
-<div class="pagebreak"> </div>
 
 # Impact of assuming no further hydroelectricity capacity expansion
 
@@ -25,7 +19,7 @@ Any expansion of dispatchable hydroelectricity capacity likely impacts my result
 
 # Expected land requirements when spacing of wind power is ignored
 
-In the estimate of land requirements of onshore wind turbines applied in this study, I include the spacing between wind turbines. While the spacing does allow for a dual use of the land together with agriculture, it excludes other land uses and it adds to the visual impact of wind power. For these reasons, land requirements of wind power in this study do not only comprise the land used for the actual towers, access roads and auxiliary infrastructure, but also the spacing between the wind turbines.
+In the estimate of land requirements of onshore wind turbines applied in this study, I include the spacing between wind turbines. While the spacing does allow for a dual use of the land together with agriculture, it excludes other land uses and it adds to the visual impact of wind power. For these reasons, land requirements of wind power in this study do not only comprise the land used for the actual towers, access roads, and auxiliary infrastructure, but also the spacing between the wind turbines.
 
 However, spacing makes up the largest part of the land requirements of wind turbines. For applications in which other impacts of renewable infrastructure are in focus, for example the sealing of land, one may want to exclude spacing from wind power's land requirements. Without spacing, wind power has a capacity density of 263\ W/m^2^\ [@Palmer-Wilson:2019] which is very high and, in fact, even higher than the one of solar power. Consequently, when aiming at minimising direct land requirements stemming from infrastructure only, onshore wind power is an attractive supply-side option, see {@fig:ternary}. Wind power has a large visual impact on landscapes, potentially devaluing land and excluding other uses, but its local land footprint is small.
 
