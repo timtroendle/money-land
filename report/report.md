@@ -193,7 +193,7 @@ My findings show that supply technology choice is an effective way to reduce lan
 
 # Acknowledgements
 
-This work was supported by a European Research Council grant (TRIPOD, grant agreement number 715132). I would like to thank Johan Lilliestam and Stefan Pfenninger for valuable comments on earlier drafts of this article.
+I would like to thank Johan Lilliestam and Stefan Pfenninger for valuable comments on earlier drafts of this article.
 
 # References
 

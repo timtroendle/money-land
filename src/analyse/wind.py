@@ -27,7 +27,7 @@ def plot_wind_share(path_to_xy, path_to_plot):
     sns.categorical._LVPlotter._width_functions = _width_functions
 
     data = calculate_data(path_to_xy)
-    fig = plt.figure(figsize=(8, 4))
+    fig = plt.figure(figsize=(7.5, 3))
     ax = fig.subplots(1, 1)
 
     sns.boxenplot(
@@ -49,7 +49,7 @@ def plot_wind_share(path_to_xy, path_to_plot):
         rectangle.set_linewidth(0)
 
     fig.tight_layout()
-    fig.savefig(path_to_plot, dpi=300)
+    fig.savefig(path_to_plot, pil_kwargs={"compression": "tiff_lzw"})
 
 
 def calculate_data(path_to_xy_data):

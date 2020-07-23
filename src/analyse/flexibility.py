@@ -28,7 +28,7 @@ def flexibility(path_to_results, path_to_plot):
     roof_plot_datas = read_data(path_to_results, "roof")
     offshore_plot_datas = read_data(path_to_results, "offshore")
 
-    fig = plt.figure(figsize=(8, 4))
+    fig = plt.figure(figsize=(7.5, 3.75))
     gs = gridspec.GridSpec(3, 4, width_ratios=[5, 5, 5, 5], height_ratios=[4, 4, 1])
     roof_axes = [fig.add_subplot(gs[0, x]) for x in [0, 1, 2, 3]]
     offshore_axes = [fig.add_subplot(gs[1, x]) for x in [0, 1, 2, 3]]
@@ -56,7 +56,7 @@ def flexibility(path_to_results, path_to_plot):
         hspace=0.2
     )
 
-    fig.savefig(path_to_plot, dpi=600)
+    fig.savefig(path_to_plot, pil_kwargs={"compression": "tiff_lzw"})
 
 
 def plot_ternary(plot_data, ax, norm):

@@ -89,13 +89,13 @@ def map_land_req(path_to_xy, path_to_aggregated_results, path_to_shapes, path_to
     countries["land_req_km2"] = land_use.to_series().reindex(countries.index)
     countries["land_req_rel"] = (countries["land_req_km2"] / countries["total_area_km2"]) * 100
 
-    fig = plt.figure(figsize=(8, 7))
+    fig = plt.figure(figsize=(7.5, 3.75))
     axes = fig.subplots(1, 2, gridspec_kw={'width_ratios': [50, 1]}).flatten()
     _plot_map(countries, axes[0])
     _plot_colorbar(fig, axes[1].inset_axes([0, 0.175, 1, 0.65]), vmin=0, vmax=countries.land_req_rel.max())
     axes[1].axis("off")
     sns.despine(fig, left=True, bottom=True)
-    fig.savefig(path_to_output, dpi=600)
+    fig.savefig(path_to_output, pil_kwargs={"compression": "tiff_lzw"})
 
 
 def _plot_map(countries, ax):

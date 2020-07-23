@@ -17,7 +17,7 @@ TOTAL_DEMAND_KWH = 3_180_000_000_000 # FIXME inject
 def plot_observations(path_to_xy, path_to_plot):
     ds = xr.open_dataset(path_to_xy)
 
-    fig = plt.figure(figsize=(8, 3))
+    fig = plt.figure(figsize=(7.5, 2.8))
     gs = gridspec.GridSpec(1, 2)
     ax_cost = fig.add_subplot(gs[0, 0])
     ax_land_use = fig.add_subplot(gs[0, 1], sharey=ax_cost)
@@ -53,7 +53,7 @@ def plot_observations(path_to_xy, path_to_plot):
     plt.subplots_adjust(
         left=0.11,
     )
-    fig.savefig(path_to_plot, dpi=300)
+    fig.savefig(path_to_plot, pil_kwargs={"compression": "tiff_lzw"})
 
 
 if __name__ == "__main__":

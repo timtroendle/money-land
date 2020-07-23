@@ -44,7 +44,7 @@ class PlotData:
 
 def technology_plot(path_to_results, land_decrease, path_to_plot):
     plot_datas = read_data(path_to_results)
-    fig = plt.figure(figsize=(8, 3))
+    fig = plt.figure(figsize=(7.5, 2.8))
     axes = fig.subplots(1, 3, sharey=True, sharex=True)
 
     for plot_data, ax in zip(plot_datas, axes):
@@ -97,7 +97,7 @@ def technology_plot(path_to_results, land_decrease, path_to_plot):
         ax.set_xlabel(plot_data.xlabel)
     sns.despine()
     fig.tight_layout()
-    fig.savefig(path_to_plot, dpi=300)
+    fig.savefig(path_to_plot, pil_kwargs={"compression": "tiff_lzw"})
 
 
 def read_data(path_to_data):

@@ -20,7 +20,7 @@ ALL_TECHS = TECHS + ["wind"]
 def boxenplot(path_to_xy_data, path_to_plot):
     data = calculate_data(path_to_xy_data)
 
-    fig = plt.figure(figsize=(8, 4))
+    fig = plt.figure(figsize=(7.5, 3.75))
     ax = fig.add_subplot(111)
 
     sns.boxenplot(
@@ -42,7 +42,7 @@ def boxenplot(path_to_xy_data, path_to_plot):
         rectangle.set_linewidth(0)
 
     fig.tight_layout()
-    fig.savefig(path_to_plot, dpi=300)
+    fig.savefig(path_to_plot, pil_kwargs={"compression": "tiff_lzw"})
 
 
 def calculate_data(path_to_xy_data):

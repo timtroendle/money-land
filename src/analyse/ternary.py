@@ -35,7 +35,7 @@ class PlotData:
 
 def plot_both_ternary(path_to_data, path_to_plot):
     plot_datas = read_data(path_to_data)
-    fig = plt.figure(figsize=(8, 8))
+    fig = plt.figure(figsize=(7.5, 7.5))
     gs = gridspec.GridSpec(3, 2, width_ratios=[5, 5], height_ratios=[25, 25, 1])
     ax_1 = fig.add_subplot(gs[0, 0])
     ax_2 = fig.add_subplot(gs[0, 1])
@@ -63,7 +63,7 @@ def plot_both_ternary(path_to_data, path_to_plot):
         wspace=0.2,
         hspace=0.05
     )
-    fig.savefig(path_to_plot, dpi=600)
+    fig.savefig(path_to_plot, pil_kwargs={"compression": "tiff_lzw"})
 
 
 def read_data(path_to_data):

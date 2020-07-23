@@ -17,7 +17,7 @@ def uncertainty_plot(path_to_xy_data, path_to_plot):
         "util": data["r50_cost_util"] * -1,
         "offshore": data["r50_cost_offshore"] * -1
     }).dropna()
-    fig = plt.figure(figsize=(8, 5))
+    fig = plt.figure(figsize=(7.5, 4.7))
     gs = gridspec.GridSpec(2, 4, width_ratios=[9, 1, 2, 6], height_ratios=[1, 10])
     ax_joint = fig.add_subplot(gs[1, 0])
     ax_marginal_top = fig.add_subplot(gs[0, 0], sharex=ax_joint)
@@ -37,7 +37,7 @@ def uncertainty_plot(path_to_xy_data, path_to_plot):
         hspace=0.1
     )
 
-    fig.savefig(path_to_plot, dpi=300)
+    fig.savefig(path_to_plot, pil_kwargs={"compression": "tiff_lzw"})
 
 
 def plot_joint(data, ax_joint, ax_marginal_top, ax_marginal_right):

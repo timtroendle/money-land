@@ -31,7 +31,7 @@ def boxenplot(path_to_xy_data, path_to_plot):
 
     data = calculate_data(path_to_xy_data)
 
-    fig = plt.figure(figsize=(8, 4))
+    fig = plt.figure(figsize=(7.5, 3))
     ax = fig.subplots(1, 1)
 
     sns.boxenplot(
@@ -47,14 +47,14 @@ def boxenplot(path_to_xy_data, path_to_plot):
         s=1.0,
         ax=ax
     )
-    ax.set_ylabel("Cost penalty relative\nto cost minimum (%)")
+    ax.set_ylabel("Cost penalty relative to cost minimum (%)")
     sns.despine()
     ax.legend(frameon=False)
     for rectangle in ax.get_legend().legendHandles:
         rectangle.set_linewidth(0)
 
     fig.tight_layout()
-    fig.savefig(path_to_plot, dpi=300)
+    fig.savefig(path_to_plot, pil_kwargs={"compression": "tiff_lzw"})
 
 
 def calculate_data(path_to_xy_data):

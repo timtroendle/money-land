@@ -14,7 +14,7 @@ YELLOW = "#FABC3C"
 def visualise_supply_shares(path_to_aggregated_results, path_to_plot):
     scenarios = xr.open_dataset(path_to_aggregated_results).scenario
 
-    fig = plt.figure(figsize=(8, 3))
+    fig = plt.figure(figsize=(7.5, 2.8))
     gs = gridspec.GridSpec(2, 4, height_ratios=[30, 1])
     ax1 = fig.add_subplot(gs[0, 0])
     ax2 = fig.add_subplot(gs[0, 1])
@@ -87,7 +87,7 @@ def visualise_supply_shares(path_to_aggregated_results, path_to_plot):
 
     fig.tight_layout()
     fig.subplots_adjust(wspace=0.1, hspace=0.1)
-    fig.savefig(path_to_plot, dpi=300)
+    fig.savefig(path_to_plot, pil_kwargs={"compression": "tiff_lzw"})
 
 
 if __name__ == "__main__":

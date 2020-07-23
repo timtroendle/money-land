@@ -15,7 +15,7 @@ onerror:
         trigger_ifttt(event_name="snakemake_failed", apikey=config["ifttt_apikey"])
 wildcard_constraints:
     resolution = "((continental)|(national))", # supported spatial resolutions
-    plot_suffix = "((png)|(svg)|(tif))"
+    plot_suffix = "((png)|(svg)|(tiff))"
 
 
 rule all:
@@ -24,13 +24,20 @@ rule all:
         f"build/output/{config['resolution']['space']}/report.pdf",
         f"build/output/{config['resolution']['space']}/report.docx",
         f"build/output/{config['resolution']['space']}/supplementary.pdf",
-        f"build/logs/{config['resolution']['space']}/test-report.html"
+        f"build/logs/{config['resolution']['space']}/test-report.html",
+        f"build/output/{config['resolution']['space']}/figures/Fig1.tiff",
+        f"build/output/{config['resolution']['space']}/figures/Fig2.tiff",
+        f"build/output/{config['resolution']['space']}/figures/Fig3.tiff",
+        f"build/output/{config['resolution']['space']}/figures/Fig4.tiff",
+        f"build/output/{config['resolution']['space']}/figures/Fig5.tiff",
+        f"build/output/{config['resolution']['space']}/figures/Fig6.tiff",
+        f"build/output/{config['resolution']['space']}/figures/Fig7.tiff"
 
 
 rule copy_report_file:
     message: "Copy file {input[0]} into dedicated report folder."
     input: "build/output/{resolution}/{filename}.{suffix}"
-    wildcard_constraints: suffix = "((csv)|(png)|(svg)|(tif))"
+    wildcard_constraints: suffix = "((csv)|(png)|(svg)|(tiff))"
     output: "build/output/{resolution}/report/{filename}.{suffix}"
     shell: "ln {input} {output}"
 
@@ -110,6 +117,29 @@ rule supplementary_material:
         -o ../build/output/{wildcards.resolution}/supplementary.{wildcards.suffix}
         """
 
+
+rule figures:
+    message: "Collect and rename all figures."
+    input:
+        "build/output/{resolution}/supply-shares.{plot_suffix}",
+        "build/output/{resolution}/land-use/observations.{plot_suffix}",
+        "build/output/{resolution}/land-use/ternary.{plot_suffix}",
+        "build/output/{resolution}/land-use/technology.{plot_suffix}",
+        "build/output/{resolution}/land-use/boxenplot-absolute.{plot_suffix}",
+        "build/output/{resolution}/land-use/wind.{plot_suffix}",
+        "build/output/{resolution}/flexibility.{plot_suffix}"
+    output:
+        "build/output/{resolution}/figures/Fig1.{plot_suffix}",
+        "build/output/{resolution}/figures/Fig2.{plot_suffix}",
+        "build/output/{resolution}/figures/Fig3.{plot_suffix}",
+        "build/output/{resolution}/figures/Fig4.{plot_suffix}",
+        "build/output/{resolution}/figures/Fig5.{plot_suffix}",
+        "build/output/{resolution}/figures/Fig6.{plot_suffix}",
+        "build/output/{resolution}/figures/Fig7.{plot_suffix}"
+    run:
+        from shutil import copyfile
+        for i in range(len(output)):
+            copyfile(input[i], output[i])
 
 rule clean: # removes all generated results
     shell:

@@ -24,23 +24,17 @@
 }
 
 @page {
-    size: A4;
+    size: letter;
     background-color: #ffffff;
-    margin-left: 3cm;
-    margin-right: 3cm;
+    margin-left: 1cm;
+    margin-right: 1cm;
     margin-top: 3cm;
-    margin-bottom: 4cm;
+    margin-bottom: 3cm;
     @bottom-center {
         font-family: KlinicSlabFont, serif;
         font-size: 1em;
         content: counter(page);
       }
-}
-
-@media print {
-    body {
-        font-size: 16px;
-    }
 }
 
 html {
@@ -318,10 +312,24 @@ table caption {
     }
 
     body {
-        font-size: 16px;
+        font-size: 11pt;
+    }
+
+    header {
+        page-break-after: always;
     }
 
     h1 {
         margin-top: 0em;
+    }
+    p, h1, h2, h3, h4, h5 {
+        margin-left: 5cm;
+    }
+    header h1, header p, header ul {
+        margin-left: 3.5cm;
+        margin-right: 3.5cm;
+    }
+    table p {
+        margin-left: initial;
     }
 }
