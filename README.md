@@ -4,6 +4,7 @@ Trade-off between land requirements and cost of fully renewable electricity in E
 
 This repository contains the entire scientific project, including code and report. The philosophy behind this repository is that no intermediary results are included, but all results are computed from raw data and code.
 
+[![article DOI](https://img.shields.io/badge/article-10.1371/journal.pone.0236958-blue)](https://doi.org/10.1371/journal.pone.0236958)
 [![data DOI](https://img.shields.io/badge/data-10.5281%2Fzenodo.3707812-blue)](https://doi.org/10.5281/zenodo.3707812)
 [![code DOI](https://img.shields.io/badge/code-10.5281%2Fzenodo.3956531-blue)](https://doi.org/10.5281/zenodo.3956531)
 
